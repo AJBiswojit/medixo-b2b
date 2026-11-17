@@ -1,0 +1,178 @@
+export const BUSINESS_SOLUTIONS = [
+  {
+    id: "automate-business",
+    number: "01",
+    challenge: "I want to automate my business.",
+    solution: "AI-Powered Business Automation",
+    overview:
+      "We map repetitive operational bottlenecks and engineer automated workflows, agentic task pipelines, intelligent document extraction, and scheduled reporting tailored to your daily operations.",
+    relevantServices: [
+      "Business Process Automation",
+      "Generative AI & Agentic AI",
+      "AI Integration & Consulting",
+    ],
+    capabilities: [
+      "Workflow Automation",
+      "Agentic Task Orchestration",
+      "Intelligent Data Extraction",
+      "Automated Reporting",
+    ],
+    recommendedService: "Business Process Automation",
+    recommendedIndustry: "",
+    accent: "#E5D3C9",
+  },
+  {
+    id: "company-chatbot",
+    number: "02",
+    challenge: "I want an intelligent chatbot trained on company data.",
+    solution: "Enterprise RAG Chatbot",
+    overview:
+      "We build Retrieval-Augmented Generation systems connected to your internal documents, policies, catalogs, and knowledge bases using hybrid search and vector indexing for grounded, context-aware answers.",
+    relevantServices: [
+      "RAG & Enterprise Knowledge Systems",
+      "Generative AI & Agentic AI",
+      "Data Engineering & Analytics",
+    ],
+    capabilities: [
+      "Retrieval-Augmented Generation",
+      "Semantic & Hybrid Search",
+      "Vector Database Integration",
+      "Document Intelligence",
+    ],
+    recommendedService: "RAG & Enterprise Knowledge Systems",
+    recommendedIndustry: "",
+    accent: "#ACC6C1",
+  },
+  {
+    id: "build-ecommerce",
+    number: "03",
+    challenge: "I want to build an e-commerce application.",
+    solution: "Custom E-commerce Development",
+    overview:
+      "We design and engineer customized digital storefronts with catalog management, inventory control, online payment integration, admin dashboards, order workflows, and AI shopping assistance.",
+    relevantServices: [
+      "Custom Software Development",
+      "Generative AI & Agentic AI",
+      "Business Process Automation",
+    ],
+    capabilities: [
+      "Custom Storefront & Catalog",
+      "Inventory & Order Management",
+      "Payment Gateway Integration",
+      "AI Shopping Assistants",
+    ],
+    recommendedService: "Custom Software Development",
+    recommendedIndustry: "Retail & E-commerce",
+    accent: "#F6EAEA",
+  },
+  {
+    id: "automate-recruitment",
+    number: "04",
+    challenge: "I want to automate recruitment.",
+    solution: "AI-Powered HR Automation",
+    overview:
+      "We develop intelligent HR and talent workflows covering automated resume parsing, structured candidate assessment, AI-assisted candidate insights, and centralized HR process management.",
+    relevantServices: [
+      "Business Process Automation",
+      "Artificial Intelligence & Machine Learning",
+      "Custom Software Development",
+    ],
+    capabilities: [
+      "Resume Processing & Extraction",
+      "Candidate Assessment Workflows",
+      "AI-Powered Candidate Insights",
+      "HR Management Systems",
+    ],
+    recommendedService: "Business Process Automation",
+    recommendedIndustry: "Human Resources",
+    accent: "#F5F5F3",
+  },
+  {
+    id: "camera-detection",
+    number: "05",
+    challenge: "I want to detect objects using cameras.",
+    solution: "Computer Vision and YOLO",
+    overview:
+      "We engineer deep learning vision pipelines powered by YOLO and OpenCV for real-time object detection, multi-object tracking, video analytics, OCR recognition, and automated visual quality inspection.",
+    relevantServices: [
+      "Computer Vision & Deep Learning",
+      "Artificial Intelligence & Machine Learning",
+      "AI Integration & Consulting",
+    ],
+    capabilities: [
+      "YOLO-Based Object Detection",
+      "Real-Time Object Tracking",
+      "Video Stream Analytics",
+      "Visual Quality Inspection",
+    ],
+    recommendedService: "Computer Vision & Deep Learning",
+    recommendedIndustry: "Manufacturing & Industrial",
+    accent: "#ACC6C1",
+  },
+  {
+    id: "ai-saas-product",
+    number: "06",
+    challenge: "I want to develop an AI-powered SaaS product.",
+    solution: "Custom AI Application Development",
+    overview:
+      "From technical strategy and scalable full-stack architecture to LLM integration, tool-calling agents, and production APIs, we partner with founders and enterprises to engineer modern AI SaaS platforms.",
+    relevantServices: [
+      "Custom Software Development",
+      "Generative AI & Agentic AI",
+      "AI Integration & Consulting",
+    ],
+    capabilities: [
+      "SaaS Application Architecture",
+      "LLM & Multi-Agent Integration",
+      "Full-Stack Web & REST APIs",
+      "Scalable Database Design",
+    ],
+    recommendedService: "Custom Software Development",
+    recommendedIndustry: "Technology / SaaS Startup",
+    accent: "#E5D3C9",
+  },
+  {
+    id: "modernize-education",
+    number: "07",
+    challenge: "I want to modernize my educational institution.",
+    solution: "Intelligent EdTech Platforms",
+    overview:
+      "We build AI-enabled educational platforms supporting automated question and paper generation, examination management, chapter-wise analysis, faculty coordination, and student-centric learning tools.",
+    relevantServices: [
+      "Generative AI & Agentic AI",
+      "Custom Software Development",
+      "Data Engineering & Analytics",
+    ],
+    capabilities: [
+      "AI Question & Paper Generation",
+      "Examination Management",
+      "Chapter-Wise Analysis",
+      "Faculty & Content Management",
+    ],
+    recommendedService: "Generative AI & Agentic AI",
+    recommendedIndustry: "Education & EdTech",
+    accent: "#F6EAEA",
+  },
+  {
+    id: "digitize-healthcare",
+    number: "08",
+    challenge: "I want to digitize my healthcare business.",
+    solution: "Healthcare Management and AI Solutions",
+    overview:
+      "We create dependable healthcare management systems, medical document intelligence pipelines, RAG-powered medical knowledge retrieval, workflow automation, and context-aware healthcare assistants.",
+    relevantServices: [
+      "RAG & Enterprise Knowledge Systems",
+      "Custom Software Development",
+      "Business Process Automation",
+    ],
+    capabilities: [
+      "Healthcare Management Systems",
+      "Medical Document Intelligence",
+      "RAG Medical Knowledge Search",
+      "Healthcare Workflow Automation",
+    ],
+    recommendedService: "RAG & Enterprise Knowledge Systems",
+    recommendedIndustry: "Healthcare & Medical",
+    accent: "#ACC6C1",
+  },
+];
