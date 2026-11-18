@@ -1,250 +1,222 @@
 import { gsap } from "./animationConfig";
 
-// Timing is a fraction of the scroll span. The flight points are two Bézier
-// controls and a landing: [canvas x, canvas y, camera depth in px]. The first
-// point is measured from each card's original CSS position at refresh time.
-// Bank is [pitch, yaw, roll]; landing is [roll, scale, opacity].
-const FLIGHTS = {
-  ai: {
-    timing: [0.035, 0.91],
-    points: [
-      [0.255, 0.177, 35],
-      [0.29, 0.238, 210],
-      [0.38, 0.47, 177],
-    ],
-    bank: [-10, -16, 6],
-    landing: [-4, 1.12, 1],
+// Desktop hero choreography.
+//
+// One scrubbed master timeline (ScrollTrigger scrub) owns a single progress
+// value `p`. Every card is a pure function of `p`, so scrolling back replays
+// the same frames and no per-frame state leaks between passes.
+//
+// Four scenes (fractions of the pinned scroll distance):
+//   01 Introduction  0.00 – 0.20  eight original cards at rest, ambient motion only
+//   02 Reveal        0.20 – 0.44  two waves of four cards travel parabolic arcs
+//                                 into a balanced two-column arrangement
+//   03 Showcase      0.44 – 0.80  eight industry cards enter in four pairs and
+//                                 each takes over the slot of its original card
+//   04 Conclusion    0.80 – 1.00  ambient motion decays, the scene label resolves
+//                                 and the pin releases into About
+//
+// Coordinates are artboard fractions for card centres. The slot a card lands
+// in is the same one its sector card occupies in the showcase.
+
+const SCENE = { reveal: 0.2, showcase: 0.44, settle: 0.8 };
+
+// Wave 1 leaves first, wave 2 follows once wave 1 is in motion. Within a wave,
+// cards start 0.012 apart so the group reads as one gesture.
+const WAVES = [
+  {
+    window: [0.2, 0.33],
+    arc: [0, -0.09], // lift: a parabola bowing upwards
+    depth: 36,
+    cards: ["ai", "education", "healthcare", "commerce"],
   },
-  healthcare: {
-    timing: [0.065, 0.86],
-    points: [
-      [1.02, 0.44, -160],
-      [0.69, 0.41, -280],
-      [0.533, 0.27, -196],
-    ],
-    bank: [13, 17, -8],
-    landing: [6, 0.91, 0.95],
+  {
+    window: [0.31, 0.42],
+    arc: [0, 0.07], // lift: a parabola dipping downwards
+    depth: -50,
+    cards: ["vision", "automation", "enterprise", "creative"],
   },
-  education: {
-    timing: [0.15, 0.94],
-    points: [
-      [0.24, 0.41, -170],
-      [0.32, 0.38, -265],
-      [0.444, 0.765, -35],
-    ],
-    bank: [18, -10, -7],
-    landing: [4, 1.02, 1],
-  },
-  commerce: {
-    timing: [0.1, 0.93],
-    points: [
-      [0.91, 0.48, -92],
-      [0.57, 0.34, -135],
-      [0.758, 0.724, 30],
-    ],
-    bank: [14, 15, 9],
-    landing: [-6, 0.99, 1],
-  },
-  vision: {
-    timing: [0.045, 0.84],
-    points: [
-      [0.17, 0.19, -235],
-      [0.43, 0.12, -330],
-      [0.212, 0.335, -145],
-    ],
-    bank: [-13, -22, -11],
-    landing: [-7, 0.97, 0.96],
-  },
-  creative: {
-    timing: [0.085, 0.92],
-    points: [
-      [0.976, 0.67, 40],
-      [0.77, 0.85, 210],
-      [0.635, 0.5, 205],
-    ],
-    bank: [-15, 23, 8],
-    landing: [6, 1.19, 1],
-  },
-  automation: {
-    timing: [0.12, 0.87],
-    points: [
-      [0.36, 0.44, -95],
-      [0.52, 0.31, -220],
-      [0.227, 0.65, -105],
-    ],
-    bank: [12, -19, -16],
-    landing: [4, 0.99, 0.97],
-  },
-  enterprise: {
-    timing: [0.055, 0.89],
-    points: [
-      [0.94, 0.74, -82],
-      [0.57, 0.79, -160],
-      [0.836, 0.25, -138],
-    ],
-    bank: [-15, 13, 16],
-    landing: [-4, 0.97, 0.96],
-  },
+];
+
+// Final arrangement: outer cards hold the edges, inner cards step inwards, and
+// the centre stays open for the scene label. Vertical gaps keep neighbours
+// apart at every desktop size. The sector each slot shows is in the comment.
+const FINAL = {
+  ai: { x: 0.11, y: 0.24, tilt: -3 }, // Robotics
+  healthcare: { x: 0.89, y: 0.24, tilt: 3 }, // Energy
+  vision: { x: 0.28, y: 0.42, tilt: 2.5 }, // Automotive
+  enterprise: { x: 0.72, y: 0.42, tilt: -2.5 }, // Finance
+  automation: { x: 0.11, y: 0.63, tilt: -2 }, // Manufacturing
+  creative: { x: 0.89, y: 0.63, tilt: 2 }, // Construction
+  education: { x: 0.28, y: 0.81, tilt: 3 }, // Agriculture
+  commerce: { x: 0.72, y: 0.81, tilt: -3 }, // Logistics
 };
 
-// Opening cards keep their original paths. A second set takes over their
-// landing positions in staggered passes, entering from the far depth plane.
-const OPENING_SPAN = 0.83;
-const SECTOR_LANES = {
-  ai: {
-    timing: [0.66, 0.97],
-    launch: [0.11, 0.52, -460],
-    bend: [
-      [0.2, 0.18, -300],
-      [0.28, 0.28, 190],
-    ],
-  },
-  healthcare: {
-    timing: [0.55, 0.89],
-    launch: [0.92, 0.23, -435],
-    bend: [
-      [0.86, 0.12, -305],
-      [0.65, 0.18, -165],
-    ],
-  },
-  education: {
-    timing: [0.64, 0.94],
-    launch: [0.13, 0.87, -380],
-    bend: [
-      [0.24, 0.86, -250],
-      [0.4, 0.61, 20],
-    ],
-  },
-  commerce: {
-    timing: [0.69, 0.95],
-    launch: [0.94, 0.82, -380],
-    bend: [
-      [0.97, 0.61, -265],
-      [0.9, 0.57, 95],
-    ],
-  },
-  vision: {
-    timing: [0.56, 0.87],
-    launch: [0.12, 0.54, -475],
-    bend: [
-      [0.08, 0.48, -300],
-      [0.16, 0.27, -160],
-    ],
-  },
-  creative: {
-    timing: [0.7, 0.98],
-    launch: [0.95, 0.26, -460],
-    bend: [
-      [0.94, 0.47, -290],
-      [0.8, 0.63, 190],
-    ],
-  },
-  automation: {
-    timing: [0.6, 0.9],
-    launch: [0.11, 0.65, -430],
-    bend: [
-      [0.22, 0.48, -280],
-      [0.32, 0.51, 15],
-    ],
-  },
-  enterprise: {
-    timing: [0.58, 0.88],
-    launch: [0.94, 0.5, -440],
-    bend: [
-      [0.99, 0.37, -305],
-      [0.91, 0.2, -125],
-    ],
-  },
+// Sector entrances, in the requested order, as pairs: Robotics + Construction,
+// Manufacturing + Finance, Agriculture + Automotive, Energy + Logistics.
+const SECTOR_ENTRY = {
+  ai: 0.44,
+  creative: 0.47,
+  automation: 0.515,
+  enterprise: 0.545,
+  education: 0.59,
+  vision: 0.62,
+  healthcare: 0.665,
+  commerce: 0.695,
 };
+const RETIRE_LENGTH = 0.07; // the original fades out first ...
+const ENTER_DELAY = 0.04; // ... then its sector card rises into the same slot.
+const ENTER_LENGTH = 0.08;
 
-const COMPACT_FLIGHTS = {
-  ai: [5, -14, 1],
-  healthcare: [7, 2, -1],
-  commerce: [4, -10, -1.6],
-  enterprise: [-4, -5, 0.8],
-};
+const TARGET_WIDTH = 0.13; // readable card width as a fraction of the artboard
+const SCALE_RANGE = [0.95, 1.12];
 
-function makeFlight(
-  card,
-  { timing: [start, end], points, bank, landing, launch, retireAt },
-) {
-  const [pitch, yaw, roll] = bank;
-  const [endRoll, endScale, endOpacity] = landing;
-  const restRoll = parseFloat(card.style.getPropertyValue("--tile-tilt"));
-  const driver = { t: 0, recede: 0 };
-  let lastT = 0;
-  let lastRecede = 0;
-  let controls;
+// Ambient drift is tied to scroll, not time. It is strongest in the opening
+// composition and decays to zero as the conclusion settles.
+const AMBIENT = [
+  [0, 4],
+  [0.2, 3.4],
+  [0.44, 2.2],
+  [0.8, 1.1],
+  [1, 0],
+];
 
+const ease = gsap.parseEase("sine.inOut");
+const clamp01 = (value) => Math.min(1, Math.max(0, value));
+const lerp = (a, b, t) => a + (b - a) * t;
+const windowed = (p, [start, end]) => ease(clamp01((p - start) / (end - start)));
+
+function piecewise(p, points) {
+  for (let i = 1; i < points.length; i++) {
+    const [x1, y1] = points[i];
+    if (p <= x1) {
+      const [x0, y0] = points[i - 1];
+      return lerp(y0, y1, (p - x0) / (x1 - x0));
+    }
+  }
+  return points[points.length - 1][1];
+}
+
+// Quadratic Bézier: a parabolic path whose control point sets the arc.
+function quadratic(a, control, b, t) {
+  const u = 1 - t;
   return {
-    addTo(timeline) {
-      timeline.to(
-        driver,
-        { t: 1, duration: end - start, ease: "sine.inOut" },
-        start,
-      );
-      if (retireAt !== undefined) {
-        timeline.to(
-          driver,
-          { recede: 1, duration: 0.122, ease: "sine.inOut" },
-          retireAt,
-        );
-      }
-    },
-    measure(width, height) {
-      const x = card.offsetLeft + card.offsetWidth / 2;
-      const y = card.offsetTop + card.offsetHeight / 2;
-      const point = ([u, v, depth]) => [u * width - x, v * height - y, depth];
-      controls = [launch ? point(launch) : [0, 0, 0], ...points.map(point)];
-      lastT = -1;
-    },
-    draw() {
-      const { t, recede } = driver;
-      if (t === lastT && recede === lastRecede) return;
-      lastT = t;
-      lastRecede = recede;
-      if (t === 0 && recede === 0) {
-        this.reset();
-        return;
-      }
-      if (recede === 1) {
-        card.style.visibility = "hidden";
-        card.style.removeProperty("transform");
-        card.style.removeProperty("opacity");
-        return;
-      }
-
-      // Evaluate the cubic in xyz. Retiring cards sink as their next sector
-      // enters the lane, so the visual count stays near the opening eight.
-      const inverse = 1 - t;
-      const a = inverse * inverse * inverse;
-      const b = 3 * inverse * inverse * t;
-      const c = 3 * inverse * t * t;
-      const d = t * t * t;
-      const [p0, p1, p2, p3] = controls;
-      const x = a * p0[0] + b * p1[0] + c * p2[0] + d * p3[0];
-      const y = a * p0[1] + b * p1[1] + c * p2[1] + d * p3[1] - 45 * recede;
-      const z = a * p0[2] + b * p1[2] + c * p2[2] + d * p3[2] - 360 * recede;
-      const lean = 4 * t * inverse;
-      const rotation = restRoll + (endRoll - restRoll) * t + roll * lean;
-      const scale = (1 + (endScale - 1) * t) * (1 - 0.16 * recede);
-      const clarity = 1 + (endOpacity - 1) * t - Math.max(0, -z / 1800) * lean;
-      const opacity =
-        clarity * (1 - recede) * (launch ? Math.min(1, 4.3 * t) : 1);
-      card.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, ${z.toFixed(2)}px) rotateX(${(pitch * lean).toFixed(2)}deg) rotateY(${(yaw * lean).toFixed(2)}deg) rotateZ(${rotation.toFixed(2)}deg) scale(${scale.toFixed(4)})`;
-      card.style.opacity = opacity.toFixed(3);
-      if (launch || recede || card.style.visibility) {
-        const visibility = opacity < 0.025 ? "hidden" : "visible";
-        if (card.style.visibility !== visibility)
-          card.style.visibility = visibility;
-      }
-    },
-    reset() {
-      card.style.removeProperty("transform");
-      card.style.removeProperty("opacity");
-      card.style.removeProperty("visibility");
-    },
+    x: u * u * a.x + 2 * u * t * control.x + t * t * b.x,
+    y: u * u * a.y + 2 * u * t * control.y + t * t * b.y,
   };
+}
+
+function measureSlots(select, gallery) {
+  const width = gallery.clientWidth;
+  const height = gallery.clientHeight;
+  const center = (card) => ({
+    x: card.offsetLeft + card.offsetWidth / 2,
+    y: card.offsetTop + card.offsetHeight / 2,
+  });
+  return Object.entries(FINAL).map(([slot, final], index) => {
+    const original = select(`[data-hero-card="${slot}"]`)[0];
+    const sector = select(`[data-hero-industry="${slot}"]`)[0];
+    const wave = WAVES.findIndex((spec) => spec.cards.includes(slot));
+    return {
+      slot,
+      final,
+      original,
+      sector,
+      target: { x: final.x * width, y: final.y * height },
+      restOriginal: center(original),
+      restSector: center(sector),
+      tilt: parseFloat(original.style.getPropertyValue("--tile-tilt")) || 0,
+      side: final.x < 0.5 ? -1 : 1,
+      finalScale: clampScale((TARGET_WIDTH * width) / original.offsetWidth),
+      wave,
+      waveOrder: WAVES[wave].cards.indexOf(slot),
+      phase: index * 0.9,
+      height,
+    };
+  });
+}
+
+function clampScale(value) {
+  return Math.min(SCALE_RANGE[1], Math.max(SCALE_RANGE[0], value));
+}
+
+function poseOriginal(slot, p) {
+  const { final, target, restOriginal, side, tilt, wave, waveOrder } = slot;
+  const spec = WAVES[wave];
+  const start = spec.window[0] + waveOrder * 0.012;
+  const t = windowed(p, [start, spec.window[1]]);
+  const control = {
+    x: (restOriginal.x + target.x) / 2,
+    y: (restOriginal.y + target.y) / 2 + spec.arc[1] * slot.height,
+  };
+  const position = quadratic(restOriginal, control, target, t);
+  const bow = Math.sin(Math.PI * t);
+  return {
+    ...position,
+    z: spec.depth * bow,
+    scale: lerp(1, slot.finalScale, t),
+    rotate: lerp(tilt, final.tilt, t) + side * 4 * bow,
+    rotateX: wave === 0 ? -5 * bow : 4 * bow,
+    rotateY: -side * 7 * bow,
+    opacity: 1,
+  };
+}
+
+function poseSector(slot, p) {
+  const { final, target, side } = slot;
+  const start = SECTOR_ENTRY[slot.slot] + ENTER_DELAY;
+  const t = windowed(p, [start, start + ENTER_LENGTH]);
+  const from = {
+    x: target.x + side * 60,
+    y: target.y + 30,
+  };
+  const control = {
+    x: target.x + side * 18,
+    y: target.y - 40,
+  };
+  const position = quadratic(from, control, target, t);
+  return {
+    ...position,
+    z: -160 * (1 - t),
+    scale: slot.finalScale * (0.9 + 0.1 * t),
+    rotate: final.tilt - 4 * side * (1 - t),
+    rotateX: 4 * (1 - t),
+    rotateY: side * 6 * (1 - t),
+    opacity: t,
+  };
+}
+
+// The original is retired in place just before its sector card rises into the
+// same slot, so the artboard keeps eight cards at every moment.
+function retireOriginal(pose, slot, p) {
+  const start = SECTOR_ENTRY[slot.slot];
+  const r = windowed(p, [start, start + RETIRE_LENGTH]);
+  return {
+    ...pose,
+    x: pose.x + slot.side * 30 * r,
+    z: pose.z - 150 * r,
+    scale: pose.scale * (1 - 0.08 * r),
+    opacity: 1 - r,
+  };
+}
+
+function applyPose(card, rest, pose, wobble) {
+  const dx = pose.x - rest.x;
+  const dy = pose.y - rest.y + wobble.y;
+  const rotate = pose.rotate + wobble.rotate;
+  card.style.transform =
+    `translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, ${pose.z.toFixed(2)}px) ` +
+    `rotateX(${pose.rotateX.toFixed(2)}deg) rotateY(${pose.rotateY.toFixed(2)}deg) ` +
+    `rotate(${rotate.toFixed(2)}deg) scale(${pose.scale.toFixed(4)})`;
+  const opacity = clamp01(pose.opacity);
+  card.style.opacity = opacity.toFixed(3);
+  const visibility = opacity < 0.01 ? "hidden" : "visible";
+  if (card.style.visibility !== visibility) card.style.visibility = visibility;
+}
+
+function clearCard(card) {
+  card.style.removeProperty("transform");
+  card.style.removeProperty("opacity");
+  card.style.removeProperty("visibility");
 }
 
 function createDesktopScene(scope, select) {
@@ -258,33 +230,30 @@ function createDesktopScene(scope, select) {
   const [tagline] = select(".hero-tagline");
   const [title] = select(".hero-title");
   const [label] = select(".hero-scene-label");
-  const cards = select("[data-hero-card]");
-  const sectorSlots = new Set(
-    cards.map((card) => card.dataset.heroIndustry).filter(Boolean),
-  );
-  const flights = cards.map((card) => {
-    const sectorSlot = card.dataset.heroIndustry;
-    const slot = sectorSlot || card.dataset.heroCard;
-    const flight = FLIGHTS[slot];
-    const lane = SECTOR_LANES[slot];
-    if (sectorSlot) {
-      return makeFlight(card, {
-        ...flight,
-        timing: lane.timing,
-        launch: lane.launch,
-        points: [...lane.bend, flight.points[2]],
-      });
+
+  let slots = [];
+  const state = { p: 0 };
+
+  const draw = () => {
+    const p = state.p;
+    const amp = piecewise(p, AMBIENT);
+    for (const slot of slots) {
+      const wobble = {
+        y: amp * Math.sin(2 * Math.PI * 2.2 * p + slot.phase),
+        rotate: 0.22 * amp * Math.sin(2 * Math.PI * 1.7 * p + slot.phase + 1.1),
+      };
+      applyPose(
+        slot.original,
+        slot.restOriginal,
+        retireOriginal(poseOriginal(slot, p), slot, p),
+        wobble,
+      );
+      applyPose(slot.sector, slot.restSector, poseSector(slot, p), wobble);
     }
-    return makeFlight(card, {
-      ...flight,
-      timing: flight.timing.map((time) => time * OPENING_SPAN),
-      retireAt: sectorSlots.has(slot) ? lane.timing[0] - 0.047 : undefined,
-    });
-  });
-  const draw = () => flights.forEach((flight) => flight.draw());
+  };
+
   const measure = () => {
-    const { clientWidth, clientHeight } = gallery;
-    flights.forEach((flight) => flight.measure(clientWidth, clientHeight));
+    slots = measureSlots(select, gallery);
     draw();
   };
   measure();
@@ -296,10 +265,9 @@ function createDesktopScene(scope, select) {
       id: "hero-scene",
       trigger: scene,
       start: () => `top top+=${parseFloat(getComputedStyle(scope).paddingTop)}`,
-      // Budget the scrub against the artboard, not an empty viewport-height
-      // box. Its natural height also lets About reach the rail at pin release.
+      // Four scenes need roughly two viewports of scroll; longer ones feel idle.
       end: () =>
-        `+=${Math.round(gsap.utils.clamp(760, 1120, scene.offsetHeight * 1.18))}`,
+        `+=${Math.round(gsap.utils.clamp(1400, 2200, window.innerHeight * 2.2))}`,
       scrub: true,
       pin: true,
       pinSpacing: true,
@@ -308,25 +276,27 @@ function createDesktopScene(scope, select) {
     },
   });
 
-  flights.forEach((flight) => flight.addTo(timeline));
-
   timeline
-    .addLabel("departure", 0.09)
-    .addLabel("crossing", 0.42)
-    .addLabel("resolve", 0.67)
+    .to(state, { p: 1, duration: 1, ease: "none" }, 0)
+    .addLabel("reveal", SCENE.reveal)
+    .addLabel("showcase", SCENE.showcase)
+    .addLabel("settle", SCENE.settle)
     .to(progress, { scaleX: 1, duration: 1, ease: "none" }, 0)
-    .to(scrim, { opacity: 0.93, duration: 0.21 }, "departure")
-    .to(actions, { opacity: 0, y: -12, duration: 0.13 }, "crossing")
-    .set(actions, { pointerEvents: "none" }, "crossing+=0.12")
-    .to(copy, { opacity: 0, y: -22, duration: 0.14 }, "crossing+=0.02")
-    .to(tagline, { opacity: 0, y: -15, duration: 0.14 }, "crossing+=0.05")
-    .to(title, { opacity: 0, y: -36, duration: 0.165 }, "crossing+=0.055")
-    .set(content, { pointerEvents: "none" }, "resolve")
-    .to(scrim, { opacity: 0, duration: 0.135 }, "resolve-=0.105")
-    .to(label, { opacity: 1, y: 0, duration: 0.16 }, "resolve+=0.04");
+    .to(actions, { opacity: 0, y: -12, duration: 0.08 }, 0.2)
+    .set(actions, { pointerEvents: "none" }, 0.27)
+    .to(copy, { opacity: 0, y: -22, duration: 0.1 }, 0.21)
+    .to(tagline, { opacity: 0, y: -15, duration: 0.1 }, 0.22)
+    .to(title, { opacity: 0, y: -36, duration: 0.12 }, 0.23)
+    .set(content, { pointerEvents: "none" }, 0.3)
+    .to(scrim, { opacity: 0.85, duration: 0.1 }, 0.26)
+    .to(scrim, { opacity: 0, duration: 0.08 }, 0.38)
+    .to(label, { opacity: 1, y: 0, duration: 0.08 }, 0.4);
 
   return () => {
-    flights.forEach((flight) => flight.reset());
+    slots.forEach((slot) => {
+      clearCard(slot.original);
+      clearCard(slot.sector);
+    });
     // The pin can render time zero during a media change. Drop those inline
     // values too, so the static and compact layouts are owned solely by CSS.
     [progress, scrim, content, actions, copy, tagline, title, label].forEach(
@@ -334,6 +304,15 @@ function createDesktopScene(scope, select) {
     );
   };
 }
+
+// Tablet and small desktop keep the original compact arcs: four cards, short
+// movements, no sector cards.
+const COMPACT_FLIGHTS = {
+  ai: [5, -14, 1],
+  healthcare: [7, 2, -1],
+  commerce: [4, -10, -1.6],
+  enterprise: [-4, -5, 0.8],
+};
 
 function createCompactScene(select, tablet) {
   const [gallery] = select(".hero-gallery");
