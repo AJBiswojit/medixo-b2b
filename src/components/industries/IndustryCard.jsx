@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
 import { industryAnchor } from "../../data/industries";
+import { photoSrcSet } from "../../data/imagery";
 
 export default function IndustryCard({
   industry,
@@ -32,12 +33,10 @@ export default function IndustryCard({
         >
           <img
             src={industry.image}
-            srcSet={
-              industry.smallImage
-                ? `${industry.smallImage} 520w, ${industry.image} 1000w`
-                : undefined
-            }
+            srcSet={photoSrcSet(industry)}
             sizes="(max-width: 679px) 84vw, (max-width: 1099px) 67vw, 744px"
+            width={industry.imageWidth}
+            height={industry.imageHeight}
             alt={industry.alt}
             loading="lazy"
             decoding="async"

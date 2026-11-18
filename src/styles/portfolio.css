@@ -191,6 +191,59 @@
   object-fit: contain;
   padding: 3%;
 }
+.project-screenshot--capture {
+  position: absolute;
+  inset: 4%;
+  width: 92%;
+  height: 92%;
+  padding: 0;
+  border: 1px solid #20202020;
+  border-radius: var(--radius-inset);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+.project-capture-gallery {
+  border-block: 1px solid var(--border-subtle);
+  padding-block: 0.75rem;
+}
+.project-capture-gallery > summary {
+  width: fit-content;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+.project-capture-note {
+  margin-block: 0.55rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.project-capture-grid {
+  display: grid;
+  gap: 1rem;
+}
+.project-capture-grid img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-inset);
+}
+.project-capture-grid figcaption {
+  margin-top: 0.38rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+.project-capture-grid figcaption a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+@media (min-width: 640px) {
+  .project-capture-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 .project-visual-caption {
   display: flex;
   flex-wrap: wrap;
@@ -351,22 +404,8 @@
 }
 .fashion-catalog {
   display: grid;
-  grid-template-columns: 0.78fr 0.78fr 1.25fr;
-  gap: 0.85cqw;
+  gap: 0.35cqw;
   padding: 1.55cqw 2cqw 1.7cqw;
-}
-.fashion-catalog img {
-  aspect-ratio: 2.1;
-  width: 100%;
-  object-fit: cover;
-  border-radius: 0.55cqw;
-}
-.fashion-catalog > span {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 0.25cqw;
 }
 .fashion-catalog strong {
   font-family: var(--font-display);
@@ -435,7 +474,8 @@
   grid-template-columns: 0.92fr 1.08fr;
 }
 .jewel-feature > div {
-  padding-left: 4.5cqw;
+  justify-content: flex-start;
+  padding: 7cqw 2.5cqw 2.5cqw 4.5cqw;
 }
 .jewel-feature img {
   object-position: 50% 49%;
@@ -626,6 +666,19 @@
 }
 .health-window .mock-dashboard-banner {
   background: linear-gradient(140deg, #e9f5f0, #d3e9e0);
+}
+.mock-clinical-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34%;
+  align-items: center;
+  gap: 1cqw;
+}
+.mock-clinical-feature img {
+  width: 100%;
+  height: 11cqw;
+  object-fit: cover;
+  object-position: center 55%;
+  border-radius: 0.6cqw;
 }
 .health-window .mock-dashboard-top {
   color: #254738;

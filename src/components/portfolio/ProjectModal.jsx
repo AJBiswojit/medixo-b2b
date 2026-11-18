@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Button from "../common/Button";
 import ProjectVisual, { InterfaceOutline } from "./ProjectVisual";
+import ProjectCapture from "./ProjectCapture";
 
 export default function ProjectModal({
   project,
@@ -116,6 +117,7 @@ export default function ProjectModal({
             </div>
           </div>
 
+          <ProjectCapture key={project.id} project={project} />
           <InterfaceOutline project={project} />
 
           {/* Capabilities & Solution Focus */}

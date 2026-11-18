@@ -1,6 +1,7 @@
 import React from "react";
 import { Braces, Layers3, Sparkles } from "lucide-react";
 import { CORE_PRINCIPLES } from "../../data/navigation";
+import { editorialPhoto, photoSrcSet } from "../../data/imagery";
 import { useGsap } from "../../hooks/useGsap";
 import {
   revealStagger,
@@ -10,6 +11,8 @@ import {
 } from "../../animations/scrollAnimations";
 import SectionHeading from "../common/SectionHeading";
 import "../../styles/editorial.css";
+
+const ABOUT_PHOTO = editorialPhoto("about-engineering");
 
 const PRINCIPLE_TONES = [
   "beige",
@@ -80,12 +83,12 @@ export default function AboutSection() {
               data-image-mask
             >
               <img
-                src="/images/about-studio.webp"
-                srcSet="/images/about-studio-520.webp 520w, /images/about-studio.webp 1000w"
-                sizes="(max-width: 899px) 92vw, 520px"
-                width="1000"
-                height="667"
-                alt="Sunlit contemporary studio interior with a long conference table"
+                src={ABOUT_PHOTO.image}
+                srcSet={photoSrcSet(ABOUT_PHOTO)}
+                sizes="(max-width: 899px) 92vw, (max-width: 1320px) 42vw, 552px"
+                width={ABOUT_PHOTO.imageWidth}
+                height={ABOUT_PHOTO.imageHeight}
+                alt="Two software developers reviewing code together at a workstation"
                 loading="lazy"
                 decoding="async"
                 data-image-layer

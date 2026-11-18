@@ -161,8 +161,8 @@ export default function IndustriesSection({ onInquireIndustry }) {
           <div data-reveal className="industry-context">
             <p className="editorial-label">Capabilities by sector</p>
             <p>
-              These cards show solutions we can engineer. The imagery is
-              illustrative; project examples are listed separately.
+              These cards show solutions we can engineer. The photos illustrate
+              each sector; project examples are listed separately.
             </p>
             <Link to="#our-work">
               View selected projects{" "}

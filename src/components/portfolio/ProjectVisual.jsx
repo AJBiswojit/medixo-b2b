@@ -16,6 +16,24 @@ import {
   Stethoscope,
 } from "lucide-react";
 
+import { photoSrcSet } from "../../data/imagery";
+import { CaptureImage } from "./ProjectCapture";
+
+function ReferencePhoto({ photo, sizes }) {
+  return (
+    <img
+      src={photo.image}
+      srcSet={photoSrcSet(photo)}
+      sizes={sizes}
+      width={photo.imageWidth}
+      height={photo.imageHeight}
+      alt=""
+      loading="lazy"
+      decoding="async"
+    />
+  );
+}
+
 function WindowBar({ children }) {
   return (
     <div className="product-window-bar">
@@ -34,7 +52,7 @@ function FashionPreview({ project }) {
   return (
     <>
       <div className="product-window fashion-window" data-image-layer>
-        <WindowBar>Online store</WindowBar>
+        <WindowBar>Store concept</WindowBar>
         <div className="store-nav">
           <strong>Pratikshya.</strong>
           <span>Collections &nbsp; / &nbsp; The Atelier</span>
@@ -48,34 +66,14 @@ function FashionPreview({ project }) {
               Shop the edit <ArrowRight />
             </span>
           </div>
-          <img
-            src="/images/fashion-editorial.webp"
-            srcSet="/images/fashion-tile.webp 240w, /images/fashion-editorial.webp 720w"
-            sizes="(max-width: 767px) 45vw, 330px"
-            width="720"
-            height="990"
-            alt=""
-            loading="lazy"
-            decoding="async"
+          <ReferencePhoto
+            photo={project.conceptPhoto}
+            sizes="(max-width: 929px) 44vw, 330px"
           />
         </div>
         <div className="fashion-catalog">
-          <img
-            src={project.secondaryImage}
-            alt=""
-            loading="lazy"
-            decoding="async"
-          />
-          <img
-            src={project.primaryImage}
-            alt=""
-            loading="lazy"
-            decoding="async"
-          />
-          <span>
-            <span className="mock-kicker">Browse by collection</span>
-            <strong>Textiles &amp; apparel</strong>
-          </span>
+          <span className="mock-kicker">Browse by collection</span>
+          <strong>Textiles &amp; apparel</strong>
         </div>
       </div>
       <div className="product-overlay fashion-overlay" data-parallax-layer>
@@ -97,7 +95,7 @@ function JewelleryPreview({ project }) {
   return (
     <>
       <div className="product-window jewellery-window" data-image-layer>
-        <WindowBar>Collection lookbook</WindowBar>
+        <WindowBar>Collection concept</WindowBar>
         <div className="jewel-nav">
           <Menu />
           <strong>SWARNOVA</strong>
@@ -114,11 +112,9 @@ function JewelleryPreview({ project }) {
               Discover the collection <ArrowUpRight />
             </span>
           </div>
-          <img
-            src={project.primaryImage}
-            alt=""
-            loading="lazy"
-            decoding="async"
+          <ReferencePhoto
+            photo={project.collectionPhoto}
+            sizes="(max-width: 929px) 43vw, 320px"
           />
         </div>
         <div className="jewel-collection-strip">
@@ -132,11 +128,9 @@ function JewelleryPreview({ project }) {
           <strong>S</strong>
           <Menu />
         </div>
-        <img
-          src={project.primaryImage}
-          alt=""
-          loading="lazy"
-          decoding="async"
+        <ReferencePhoto
+          photo={project.detailPhoto}
+          sizes="(max-width: 929px) 19vw, 140px"
         />
         <span className="mock-kicker">Collection</span>
         <strong>Heritage Gold</strong>
@@ -164,7 +158,7 @@ function DashboardShell({ brand, menu, className, icon: Icon, children }) {
       className={`product-window dashboard-window ${className}`}
       data-image-layer
     >
-      <WindowBar>{brand} workspace</WindowBar>
+      <WindowBar>{brand} workspace concept</WindowBar>
       <div className="mock-dashboard">
         <div className="mock-sidebar">
           <div className="mock-dashboard-brand">
@@ -237,7 +231,7 @@ function EducationPreview({ project }) {
   );
 }
 
-function HealthcarePreview() {
+function HealthcarePreview({ project }) {
   return (
     <>
       <DashboardShell
@@ -250,12 +244,15 @@ function HealthcarePreview() {
           <strong>Clinical knowledge hub</strong>
           <Search />
         </div>
-        <div className="mock-dashboard-banner">
-          <span className="mock-kicker">Knowledge library</span>
-          <strong>Search medical documents</strong>
-          <span>
-            Find an internal reference <ArrowRight />
-          </span>
+        <div className="mock-dashboard-banner mock-clinical-feature">
+          <div>
+            <span className="mock-kicker">Knowledge library</span>
+            <strong>Search medical documents</strong>
+          </div>
+          <ReferencePhoto
+            photo={project.referencePhoto}
+            sizes="(max-width: 929px) 22vw, 145px"
+          />
         </div>
         <div className="mock-documents">
           <strong>Reference workspace</strong>
@@ -326,8 +323,15 @@ export function InterfaceOutline({ project }) {
 
 export default function ProjectVisual({ project }) {
   const [failedScreenshot, setFailedScreenshot] = useState(false);
+  const [failedCapture, setFailedCapture] = useState(false);
   const Preview = PREVIEWS[project.layoutVariant];
   const hasScreenshot = project.screenshot && !failedScreenshot;
+  const capture = failedCapture ? null : project.capture;
+  const visualLabel = hasScreenshot
+    ? "Product screenshot"
+    : capture
+      ? "Local build · Sample data"
+      : "Concept preview";
   return (
     <figure
       className="project-visual"
@@ -348,6 +352,13 @@ export default function ProjectVisual({ project }) {
             onError={() => setFailedScreenshot(true)}
             data-image-layer
           />
+        ) : capture ? (
+          <CaptureImage
+            className="project-screenshot project-screenshot--capture"
+            capture={capture}
+            sizes="(max-width: 929px) 90vw, 700px"
+            onError={() => setFailedCapture(true)}
+          />
         ) : (
           <div className="product-composition" aria-hidden="true">
             <Preview project={project} />
@@ -357,9 +368,15 @@ export default function ProjectVisual({ project }) {
       <figcaption className="project-visual-caption">
         <span className="editorial-label">
           <span className="project-caption-dot" aria-hidden="true" />
-          {hasScreenshot ? "Product screenshot" : "Illustrative interface"}
+          {visualLabel}
         </span>
-        <span>{project.interfacePreview.label}</span>
+        <span>
+          {hasScreenshot
+            ? project.interfacePreview.label
+            : capture?.label ||
+              project.conceptLabel ||
+              project.interfacePreview.label}
+        </span>
       </figcaption>
     </figure>
   );

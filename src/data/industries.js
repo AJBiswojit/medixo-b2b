@@ -1,3 +1,5 @@
+import { editorialPhoto } from "./imagery";
+
 export const INDUSTRY_GROUPS = [
   { id: "people", title: "People & services" },
   { id: "commerce", title: "Commerce & experiences" },
@@ -6,12 +8,7 @@ export const INDUSTRY_GROUPS = [
   { id: "finance-property", title: "Finance & property" },
 ];
 
-function study(name) {
-  return {
-    image: `/images/industry-study-${name}.webp`,
-    smallImage: `/images/industry-study-${name}-520.webp`,
-  };
-}
+const cover = (id, position) => editorialPhoto(`industry-${id}`, { position });
 
 // The catalogue and inquiry form share this list. Only entries with a hero
 // slot join the desktop scroll scene; industry cards never imply project work.
@@ -22,10 +19,8 @@ export const INDUSTRIES = [
     title: "Healthcare & Medical",
     summary:
       "Intelligent digital platforms, clinical document retrieval, and workflow systems designed for clarity and dependability across healthcare environments.",
-    image: "/images/project-medixo-health.webp",
-    smallImage: "/images/project-medixo-health-520.webp",
-    imagePosition: "center 54%",
-    alt: "Serene contemporary healthcare environment with soft mint architectural details",
+    ...cover("healthcare", "center 48%"),
+    alt: "Diagnostic imaging scanner and patient table in a hospital room",
     accent: "#ACC6C1",
     solutions: [
       "Healthcare Management Applications",
@@ -41,10 +36,8 @@ export const INDUSTRIES = [
     title: "Education & EdTech",
     summary:
       "Modern academic platforms enabling automated question generation, examination workflows, structured assessment, and guided learning experiences.",
-    image: "/images/project-edux.webp",
-    smallImage: "/images/project-edux-520.webp",
-    imagePosition: "center 58%",
-    alt: "Sunlit educational workspace with digital tablet and study materials",
+    ...cover("education", "center 47%"),
+    alt: "Teacher leading a class with laptops open on the desks",
     accent: "#E5D3C9",
     solutions: [
       "AI-Powered Learning Platforms",
@@ -60,9 +53,8 @@ export const INDUSTRIES = [
     title: "Retail & E-commerce",
     summary:
       "End-to-end digital storefronts paired with inventory control, catalog orchestration, AI shopping guidance, and automated customer assistance.",
-    // Locally optimized Pexels photograph 9218540.
-    image: "/images/industry-retail.webp",
-    alt: "Minimalist retail packaging and a curated boutique display",
+    ...cover("retail-ecommerce", "center 54%"),
+    alt: "Clothing racks and a central display in a boutique",
     accent: "#F6EAEA",
     solutions: [
       "E-commerce Platforms",
@@ -78,9 +70,8 @@ export const INDUSTRIES = [
     title: "Jewellery & Fashion",
     summary:
       "Editorial digital commerce experiences, curated collection showcases, and integrated back-office systems tailored to fashion houses and jewellery brands.",
-    image: "/images/project-swarnova.webp",
-    imagePosition: "center 56%",
-    alt: "Gold jewellery arranged on cream travertine in soft sunlight",
+    ...cover("jewellery-fashion", "center 58%"),
+    alt: "Gold earrings, ring and bracelet displayed together on a pale stand",
     accent: "#E5D3C9",
     solutions: [
       "Jewellery E-commerce Platforms",
@@ -96,9 +87,8 @@ export const INDUSTRIES = [
     title: "Human Resources",
     summary:
       "Smart people-operations platforms automating candidate screening, resume intelligence, structured evaluation, and internal HR administration.",
-    // Locally optimized Pexels photograph 16585156.
-    image: "/images/industry-people.webp",
-    alt: "A team in discussion in a bright, glass-walled office",
+    ...cover("human-resources", "center 40%"),
+    alt: "Two professionals talking across a desk during an interview",
     accent: "#DCE9D5",
     solutions: [
       "Recruitment Automation",
@@ -114,8 +104,8 @@ export const INDUSTRIES = [
     title: "Manufacturing & Industrial",
     summary:
       "Real-time visual inspection, YOLO-driven object detection, operational monitoring, and automated workflows for industrial facilities.",
-    ...study("manufacturing"),
-    alt: "Editorial model of a sage conveyor carrying precision-machined parts",
+    ...cover("manufacturing", "center 46%"),
+    alt: "Workers assembling equipment along a factory production line",
     accent: "#DCE9D5",
     hero: { slot: "automation", label: "Manufacturing" },
     solutions: [
@@ -133,8 +123,8 @@ export const INDUSTRIES = [
     title: "Robotics & Intelligent Automation",
     summary:
       "Software that connects robotic equipment, vision systems, and operational workflows, from visual recognition to repetitive task automation.",
-    ...study("robotics"),
-    alt: "Lavender robotic arm holding a ceramic sphere above a circular pedestal",
+    ...cover("robotics", "center 54%"),
+    alt: "Yellow industrial robotic arm inside a production cell",
     accent: "#DCD5F5",
     hero: { slot: "ai", label: "Robotics" },
     spotlight: true,
@@ -152,8 +142,8 @@ export const INDUSTRIES = [
     title: "Construction & Infrastructure",
     summary:
       "Project and site software that brings progress, field observations, and safety reporting into a shared view for construction teams.",
-    ...study("construction"),
-    alt: "Warm-toned architectural model of a building under construction with a slender crane",
+    ...cover("construction", "center 47%"),
+    alt: "Crane beside a building frame and scaffolding under construction",
     accent: "#F3D5C5",
     hero: { slot: "creative", label: "Construction" },
     spotlight: true,
@@ -171,8 +161,8 @@ export const INDUSTRIES = [
     title: "Finance & FinTech",
     summary:
       "Document intelligence, predictive analytics, automated reporting, and secure custom financial software.",
-    ...study("finance"),
-    alt: "Stacks of brass tokens with sculpted paper and lavender glass",
+    ...cover("finance-fintech", "center 43%"),
+    alt: "Financial charts displayed across a workstation and tablet",
     accent: "#E5D3C9",
     hero: { slot: "enterprise", label: "Finance" },
     spotlight: true,
@@ -189,8 +179,8 @@ export const INDUSTRIES = [
     title: "Real Estate & Property Technology",
     summary:
       "Property portfolio platforms, intelligent inquiry assistants, client management, and workflow automation.",
-    ...study("real-estate"),
-    alt: "Cream plaster model of a contemporary residence with a landscaped courtyard",
+    ...cover("real-estate", "center 47%"),
+    alt: "Contemporary house with a brick driveway and trees",
     accent: "#E5D3C9",
     solutions: [
       "Property Portfolio Platforms",
@@ -205,8 +195,8 @@ export const INDUSTRIES = [
     title: "Agriculture & AgriTech",
     summary:
       "Digital tools that combine field observations, imagery, and operational data to help agricultural teams monitor crops and plan work.",
-    ...study("agriculture"),
-    alt: "Miniature farmland with sculpted sage and golden crop rows",
+    ...cover("agriculture", "center 55%"),
+    alt: "Aerial view of long crop rows and farm machinery in a field",
     accent: "#F7E4B8",
     hero: { slot: "education", label: "Agriculture" },
     solutions: [
@@ -222,8 +212,8 @@ export const INDUSTRIES = [
     title: "Automotive & Mobility",
     summary:
       "Vehicle, fleet, and inspection software for teams coordinating moving assets, maintenance workflows, and operational reporting.",
-    ...study("automotive"),
-    alt: "Powder-blue concept vehicle displayed on a cream oval plinth",
+    ...cover("automotive", "center 55%"),
+    alt: "Electric car connected to a charging station",
     accent: "#D8E9F7",
     hero: { slot: "vision", label: "Automotive" },
     solutions: [
@@ -239,8 +229,8 @@ export const INDUSTRIES = [
     title: "Energy & Utilities",
     summary:
       "Monitoring, analytics, and automation for teams tracking energy use and the condition of distributed infrastructure.",
-    ...study("energy"),
-    alt: "Miniature wind turbines and solar panels on a rounded green terrain model",
+    ...cover("energy", "center 52%"),
+    alt: "Wind turbines standing across green hills",
     accent: "#D6E8E3",
     hero: { slot: "healthcare", label: "Energy" },
     solutions: [
@@ -256,8 +246,8 @@ export const INDUSTRIES = [
     title: "Logistics & Supply Chain",
     summary:
       "Operational visibility, data processing pipelines, automated tracking workflows, and computer vision systems.",
-    ...study("logistics"),
-    alt: "Miniature blush shipping containers and parcels arranged on a loading platform",
+    ...cover("logistics", "center 58%"),
+    alt: "Forklift and worker between tall racks in a distribution warehouse",
     accent: "#F6EAEA",
     hero: { slot: "commerce", label: "Logistics" },
     solutions: [
@@ -273,8 +263,8 @@ export const INDUSTRIES = [
     title: "Hospitality & Travel",
     summary:
       "Booking, guest service, and operations software for hospitality and travel teams that need coordinated customer and back-office workflows.",
-    ...study("hospitality"),
-    alt: "Illustrated resort courtyard with a terracotta arch and a turquoise plunge pool",
+    ...cover("hospitality-travel", "center 44%"),
+    alt: "Uniformed receptionist standing behind a hotel check-in desk",
     accent: "#F3D5C5",
     solutions: [
       "Booking and Reservation Systems",
@@ -289,9 +279,8 @@ export const INDUSTRIES = [
     title: "Telecommunications",
     summary:
       "Data and software systems for service operations, network reporting, and automated support workflows.",
-    ...study("telecommunications"),
-    imagePosition: "center 44%",
-    alt: "Miniature cellular tower with panel antennas and a small dish, mounted on a powder-blue base",
+    ...cover("telecommunications", "62% 36%"),
+    alt: "Lattice telecommunications tower with antennas and dishes against the sky",
     accent: "#D8E9F7",
     solutions: [
       "Service Operations Portals",
@@ -306,9 +295,8 @@ export const INDUSTRIES = [
     title: "Media & Entertainment",
     summary:
       "Tools for organizing creative assets, coordinating production work, and helping audiences discover relevant content.",
-    ...study("media-entertainment"),
-    imagePosition: "center 62%",
-    alt: "Apricot cinema camera beside a cream film reel and a curling amber filmstrip",
+    ...cover("media-entertainment", "center 48%"),
+    alt: "Cinema camera with a large lens and mounted production accessories",
     accent: "#F3D5C5",
     solutions: [
       "Media Asset Management",
@@ -323,8 +311,8 @@ export const INDUSTRIES = [
     title: "Professional Services",
     summary:
       "Enterprise RAG knowledge assistants, automated research and reporting, and bespoke client portals.",
-    ...study("professional-services"),
-    alt: "Open sage folio with cream papers, a brass pen, and a sea-glass paperweight",
+    ...cover("professional-services", "center 41%"),
+    alt: "Advisers reviewing documents together at a table",
     accent: "#D6E8E3",
     solutions: [
       "Enterprise Knowledge Assistants",
