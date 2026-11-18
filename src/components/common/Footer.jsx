@@ -12,7 +12,8 @@ export default function Footer({ onSelectService }) {
       return;
     event.preventDefault();
     if (serviceId) onSelectService?.(serviceId);
-    scrollToSection(serviceId ? `service-${serviceId}` : targetId);
+    // Services are a pinned sequence: the section handles the exact position.
+    scrollToSection(serviceId ? "services" : targetId);
   };
 
   return (

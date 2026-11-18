@@ -10,8 +10,8 @@ export const INDUSTRY_GROUPS = [
 
 const cover = (id, position) => editorialPhoto(`industry-${id}`, { position });
 
-// The catalogue and inquiry form share this list. Only entries with a hero
-// slot join the desktop scroll scene; industry cards never imply project work.
+// The catalogue and inquiry form share this list. Industry cards never imply
+// project work.
 export const INDUSTRIES = [
   {
     id: "healthcare",
@@ -107,7 +107,6 @@ export const INDUSTRIES = [
     ...cover("manufacturing", "center 46%"),
     alt: "Workers assembling equipment along a factory production line",
     accent: "#DCE9D5",
-    hero: { slot: "automation", label: "Manufacturing" },
     solutions: [
       "Quality Inspection",
       "Predictive Maintenance",
@@ -126,7 +125,6 @@ export const INDUSTRIES = [
     ...cover("robotics", "center 54%"),
     alt: "Yellow industrial robotic arm inside a production cell",
     accent: "#DCD5F5",
-    hero: { slot: "ai", label: "Robotics" },
     spotlight: true,
     solutions: [
       "Robotics Software Integration",
@@ -145,7 +143,6 @@ export const INDUSTRIES = [
     ...cover("construction", "center 47%"),
     alt: "Crane beside a building frame and scaffolding under construction",
     accent: "#F3D5C5",
-    hero: { slot: "creative", label: "Construction" },
     spotlight: true,
     solutions: [
       "Construction Management Systems",
@@ -164,7 +161,6 @@ export const INDUSTRIES = [
     ...cover("finance-fintech", "center 43%"),
     alt: "Financial charts displayed across a workstation and tablet",
     accent: "#E5D3C9",
-    hero: { slot: "enterprise", label: "Finance" },
     spotlight: true,
     solutions: [
       "Financial Analytics",
@@ -198,7 +194,6 @@ export const INDUSTRIES = [
     ...cover("agriculture", "center 55%"),
     alt: "Aerial view of long crop rows and farm machinery in a field",
     accent: "#F7E4B8",
-    hero: { slot: "education", label: "Agriculture" },
     solutions: [
       "Smart Farming Applications",
       "Crop Monitoring",
@@ -215,7 +210,6 @@ export const INDUSTRIES = [
     ...cover("automotive", "center 55%"),
     alt: "Electric car connected to a charging station",
     accent: "#D8E9F7",
-    hero: { slot: "vision", label: "Automotive" },
     solutions: [
       "Vehicle Management Systems",
       "Fleet Management",
@@ -232,7 +226,6 @@ export const INDUSTRIES = [
     ...cover("energy", "center 52%"),
     alt: "Wind turbines standing across green hills",
     accent: "#D6E8E3",
-    hero: { slot: "healthcare", label: "Energy" },
     solutions: [
       "Energy Monitoring",
       "Predictive Analytics",
@@ -249,7 +242,6 @@ export const INDUSTRIES = [
     ...cover("logistics", "center 58%"),
     alt: "Forklift and worker between tall racks in a distribution warehouse",
     accent: "#F6EAEA",
-    hero: { slot: "commerce", label: "Logistics" },
     solutions: [
       "Warehouse Management",
       "Inventory Management",

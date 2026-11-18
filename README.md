@@ -17,7 +17,7 @@ Run `npm run build` to compile the production site into `dist/`. Serve the entir
 
 ## Industry catalogue
 
-`src/data/industries.js` is the source for sector names, imagery, capabilities, the gallery directory, and inquiry options. Use `spotlight: true` to feature a sector first in the gallery. To include it in the desktop hero, assign an unused `hero.slot` from `HERO_CARDS` in `src/data/navigation.js` and a short `hero.label`. The opening hero imagery is independent of this mapping. Catalogue photography illustrates service capabilities, not client or project work. Portfolio entries remain in `src/data/projects.js`.
+`src/data/industries.js` is the source for sector names, imagery, capabilities, the gallery directory, and inquiry options. Use `spotlight: true` to feature a sector first in the gallery. Catalogue photography illustrates service capabilities, not client or project work. Portfolio entries remain in `src/data/projects.js`.
 
 ## Photography and product views
 

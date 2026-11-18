@@ -1,5 +1,3 @@
-import { editorialPhoto } from "./imagery";
-
 export const BRAND = {
   name: "MEDIXO AI",
   tagline: "Building Intelligent Solutions. Engineering the Future.",
@@ -14,90 +12,6 @@ export const NAV_ITEMS = [
   { id: "technologies", label: "Technologies", href: "#technologies" },
   { id: "our-work", label: "Our Work", href: "#our-work" },
   { id: "contact", label: "Contact", href: "#contact" },
-];
-
-const heroPhoto = (name, position) =>
-  editorialPhoto(`hero-${name}`, {
-    width: 480,
-    height: 320,
-    smallWidth: 260,
-    position,
-  });
-
-// Source order is also the reading order of the stacked editorial gallery.
-export const HERO_CARDS = [
-  {
-    id: "ai",
-    title: "Artificial Intelligence",
-    target: "services",
-    tone: "lavender",
-    ...heroPhoto("ai-infrastructure", "center 48%"),
-    compact: true,
-    tilt: -8,
-  },
-  {
-    id: "healthcare",
-    title: "Healthcare",
-    target: "industries",
-    tone: "mint",
-    ...heroPhoto("clinical-monitoring", "57% center"),
-    compact: true,
-    tilt: 8,
-  },
-  {
-    id: "education",
-    title: "Education",
-    target: "industries",
-    tone: "butter",
-    ...heroPhoto("digital-learning", "40% 52%"),
-    tablet: true,
-    tilt: -7,
-  },
-  {
-    id: "commerce",
-    title: "E-commerce",
-    target: "our-work",
-    tone: "blush",
-    ...heroPhoto("fashion-retail", "center 52%"),
-    compact: true,
-    tilt: 7,
-  },
-  {
-    id: "vision",
-    title: "Computer Vision",
-    target: "services",
-    tone: "powder",
-    ...heroPhoto("vision-camera", "48% 58%"),
-    imageCredit: "Digital inspection photograph by Keyence DE (CC BY-SA 4.0)",
-    tablet: true,
-    tilt: 6,
-  },
-  {
-    id: "creative",
-    title: "Generative AI",
-    target: "services",
-    tone: "peach",
-    ...heroPhoto("creative-workstation", "47% center"),
-    tilt: 10,
-  },
-  {
-    id: "automation",
-    title: "Automation",
-    target: "services",
-    tone: "sage",
-    ...heroPhoto("robotic-cell", "44% 55%"),
-    tilt: 9,
-  },
-  {
-    id: "enterprise",
-    title: "Enterprise Software",
-    target: "technologies",
-    tone: "beige",
-    ...heroPhoto("analytics-dashboard", "center 50%"),
-    imageCredit: "Apache Superset sample analytics dashboard",
-    compact: true,
-    tilt: -8,
-  },
 ];
 
 export const CORE_PRINCIPLES = [
