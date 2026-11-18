@@ -1,615 +1,290 @@
 .hero {
   padding-top: var(--header-height);
-  background: white;
+  background: var(--hero-paper);
 }
 
 .hero-stage {
   position: relative;
   isolation: isolate;
   overflow: clip;
-  background: var(--hero-paper);
+  background: radial-gradient(ellipse at 50% 34%, #fcfbf8 0%, #f3f2ed 100%);
   border-bottom: 1px solid var(--border-subtle);
-}
-
-.hero-backdrop {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 43%, #fffdf9 5%, transparent 58%),
-    radial-gradient(ellipse at 16% 21%, #ede8f6 0, transparent 35%),
-    radial-gradient(ellipse at 86% 76%, #f5e9de 0, transparent 35%),
-    radial-gradient(ellipse at 84% 11%, #eaf1e9 0, transparent 35%);
-}
-
-.hero-backdrop::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, #746f66 0.65px, transparent 0.85px)
-    center / 18px 18px;
-  opacity: 0.2;
-  mask-image: radial-gradient(ellipse at center, transparent 18%, #000 73%);
-}
-
-.hero-canvas {
-  position: relative;
-  max-width: 1550px;
-  margin-inline: auto;
-  padding: 3.35rem 1.25rem 0;
-}
-
-.hero-content {
-  position: relative;
-  z-index: 3;
   text-align: center;
-  max-width: 750px;
-  margin-inline: auto;
+  padding: clamp(2.8rem, 8vw, 7rem) 1rem clamp(2.8rem, 7vw, 6rem);
 }
 
-.hero-tagline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.52rem;
-  min-height: 33px;
-  padding: 0.38rem 0.78rem;
-  color: #3e5148;
-  background: rgb(255 255 255 / 78%);
-  border: 1px solid #dbdfd6;
-  border-radius: 100px;
-  font-size: 0.6875rem;
-  line-height: 1.35;
-  letter-spacing: 0.012em;
-  font-weight: 750;
-}
-
-.hero-tagline svg {
-  flex-shrink: 0;
+.hero-eyebrow {
+  margin-bottom: clamp(0.65rem, 1.65svh, 1.1rem);
+  letter-spacing: 0.24em;
+  color: #425b4d;
 }
 
 .hero-title {
-  font-size: clamp(1.75rem, 9.16vw, 4.8rem);
-  line-height: 1.01;
-  letter-spacing: -0.044em;
-  margin: 1.28rem auto 0;
+  margin: 0 auto;
+  font-size: clamp(1.15rem, 6.75vw, 5.65rem);
+  line-height: 1.025;
+  letter-spacing: -0.038em;
 }
 
-.hero-title em {
-  color: var(--green-ink);
-}
-.hero-line {
+.hero-title span {
   display: block;
+  white-space: nowrap;
 }
 
-.hero-copy {
-  max-width: 33rem;
-  margin: 1.3rem auto 0;
-  color: #484844;
-  font-size: clamp(0.88rem, 1.11vw, 1rem);
-  line-height: 1.65;
-  text-wrap: pretty;
+.hero-intro {
+  margin-top: 1.5rem;
 }
 
-.hero-copy p + p {
-  margin: 0.48rem auto 0;
-  max-width: 27rem;
-  color: var(--text-secondary);
-  font-size: 0.85em;
+.hero-disciplines {
+  color: #4c514b;
+  font-size: clamp(0.76rem, 1.25vw, 0.98rem);
+  font-weight: 700;
+  letter-spacing: 0.015em;
 }
 
 .hero-actions {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 0.4rem 0.65rem;
-  margin-top: 1.35rem;
+  gap: 0.55rem;
+  margin-top: 0.95rem;
 }
 
-.hero-actions > :not(:last-child) {
-  min-height: 46px;
-}
-.hero-actions > :last-child {
-  margin-inline: 26%;
-  flex-shrink: 0;
-  font-size: 0.8rem;
+.hero-actions > a {
+  min-height: 44px;
+  padding-inline: clamp(0.65rem, 2vw, 1.38rem);
+  font-size: clamp(0.71rem, 1.17vw, 0.84rem);
+  font-weight: 750;
 }
 
-.hero-gallery {
-  position: relative;
+.hero-scroll-note {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* The same twelve figures remain available in source order without motion. */
+.hero-camera {
+  max-width: 1160px;
+  margin: clamp(2rem, 5vw, 4rem) auto 0;
+}
+
+.hero-track {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-  gap: 0.85rem;
-  width: min(100%, 440px);
-  max-width: 100%;
-  margin: 1.7rem auto 1.4rem;
-  padding: 0 0.12rem 0.65rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.8rem, 5vw, 3.4rem) clamp(1rem, 3vw, 2.4rem);
 }
 
-.hero-traces,
-.hero-scrim,
-.hero-scene-label,
-.hero-progress {
-  display: none;
-}
-.hero-card {
-  --tile-rest-y: 0px;
-  --tile-rest-tilt: -2deg;
-  --tile-arc-x: 0px;
-  --tile-arc-y: 0px;
-  --tile-arc-tilt: 0deg;
+.hero-plane {
   min-width: 0;
-  transform: translate(
-      var(--tile-arc-x),
-      calc(var(--tile-rest-y) + var(--tile-arc-y))
-    )
-    rotate(calc(var(--tile-rest-tilt) + var(--tile-arc-tilt)));
-}
-.hero-card:not([data-compact]) {
-  display: none;
-}
-.hero-card:nth-of-type(2n) {
-  --tile-rest-y: 10px;
-  --tile-rest-tilt: 2deg;
 }
 
-.hero-tile {
-  display: flex;
-  flex-direction: column;
-  aspect-ratio: var(--tile-ratio, 1.16);
-  min-width: 0;
+.hero-frame {
+  width: min(100%, 320px);
+  aspect-ratio: 3 / 4;
+  margin-inline: auto;
   overflow: hidden;
-  border-radius: 17px;
-  padding: 7px;
-  border: 1px solid rgb(32 32 32 / 8%);
-  background: var(--tile-color);
-  color: var(--text-primary);
-  box-shadow:
-    0 17px 26px -20px #3b2b3280,
-    0 3px 8px -4px #3b2b3230,
-    inset 0 1px rgb(255 255 255 / 60%);
-  transition:
-    box-shadow 350ms ease,
-    scale 350ms ease;
+  border-radius: 8px;
+  background: #ddded8;
+  box-shadow: 0 12px 26px -17px rgb(18 23 21 / 42%);
+  outline: 1px solid rgb(26 34 31 / 14%);
+  outline-offset: -1px;
 }
 
-.hero-tile:hover,
-.hero-tile:focus-visible {
-  scale: 1.035;
-  box-shadow:
-    0 20px 32px -19px #3b2b3280,
-    0 4px 10px -6px #3b2b3250;
-}
-
-.hero-tile-body {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  isolation: isolate;
-  overflow: hidden;
-  border-radius: 11px;
-  background: rgb(255 255 255 / 52%);
-}
-
-.hero-tile-body img {
+.hero-frame img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: var(--tile-crop, center);
 }
 
-.hero-tile-caption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.32rem;
-  padding: 0.47rem 0.12rem 0.04rem;
-  font-size: clamp(9.5px, 2.7vw, 11.7px);
-  line-height: 1.25;
-  font-weight: 800;
-  letter-spacing: -0.018em;
+.hero-caption {
+  margin: 0.78rem auto 0;
+  color: var(--text-primary);
 }
 
-.hero-tile-caption svg {
-  flex: none;
+.hero-caption h2 {
+  margin: 0;
+  font-size: clamp(1.24rem, 2.35vw, 2.2rem);
+  line-height: 1.1;
+  letter-spacing: -0.024em;
+  text-wrap: balance;
 }
 
-.hero-margin {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.65rem;
-  max-width: 1344px;
-  margin-inline: auto;
-  padding: 0.85rem 0 1rem;
-  border-top: 1px solid #2222;
-  font-size: 0.61rem;
-  letter-spacing: 0.12em;
-}
-.hero-margin a,
-.hero-edition,
-.hero-margin-actions {
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-.hero-margin a:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.registration-mark {
-  font-size: 0.98rem;
-  line-height: 1;
-  color: var(--green-ink);
+@media (min-width: 620px) {
+  .hero-title {
+    font-size: clamp(2rem, 4.8vw, 5.65rem);
+  }
+
+  .hero-track {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
-.hero-index {
-  border-bottom: 1px solid var(--border-subtle);
+@media (min-width: 1000px) {
+  .hero-track {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
-.hero-index-inner {
-  display: flex;
-  align-items: center;
-  gap: clamp(1rem, 4.2vw, 4rem);
-  min-height: 64px;
+
+.hero-stage[data-mode] {
+  height: calc(100vh - var(--header-height));
+  /* Keep camera geometry stable as mobile browser chrome expands/collapses. */
+  height: calc(100svh - var(--header-height));
+  padding: 0;
 }
-.hero-index-label {
-  flex: none;
-  color: var(--green-ink);
-  padding-right: 1.2rem;
-  border-right: 1px solid var(--border-subtle);
+
+.hero-stage[data-mode] :is(.hero-brand-intro, .hero-intro) {
+  position: absolute;
+  z-index: 2;
+  inset-inline: 0.85rem;
+  margin: 0;
 }
-.hero-index ul {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.45rem 0.9rem;
-  width: 100%;
-  flex-wrap: wrap;
-  font-size: 0.78rem;
-  font-weight: 750;
-  color: #555550;
+
+.hero-stage[data-mode] .hero-brand-intro {
+  top: clamp(16%, calc(20.3% + (100svh - 780px) * 0.2), 20.3%);
+  translate: 0 calc(-50% + var(--hero-brand-y, 0px));
+  pointer-events: none;
 }
-.hero-index li {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
+
+.hero-stage[data-mode] .hero-intro {
+  top: 72%;
+  pointer-events: none;
 }
-.hero-index li::before {
+
+.hero-stage[data-mode] .hero-intro:not([inert]) .hero-actions > a {
+  pointer-events: auto;
+}
+
+.hero-stage[data-mode] .hero-camera {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  max-width: none;
+  margin: 0;
+  pointer-events: none;
+  perspective: var(--hero-perspective, 1000px);
+  perspective-origin: 50% 50%;
+}
+
+.hero-stage[data-mode] .hero-track {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform-style: preserve-3d;
+}
+
+.hero-stage[data-mode] :is(.hero-plane, .hero-plane figure) {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.hero-stage[data-mode] .hero-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: var(--hero-portrait-height);
+  backface-visibility: hidden;
+}
+
+.hero-stage[data-mode] .hero-frame::after {
   content: "";
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #86968e;
-  flex: none;
+  position: absolute;
+  inset: 0;
+  background: #1c211e;
+  opacity: var(--hero-shade, 0);
+}
+
+/* Place the label on a flat plane below the portrait, not on the photograph. */
+.hero-stage[data-mode] .hero-caption {
+  position: absolute;
+  left: 50%;
+  top: var(--caption-top, 100%);
+  translate: -50% 0;
+  width: min(93%, 54rem);
+  margin-top: clamp(0.55rem, 1.55svh, 1.35rem);
+  opacity: var(--caption-opacity, 0);
+}
+
+.hero-stage[data-mode] .hero-caption h2 {
+  font-size: clamp(1.23rem, min(2.76vw, 5.3svh), 2.55rem);
+}
+
+.hero-stage[data-mode] .hero-scroll-note {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  inset-inline: 1rem;
+  bottom: clamp(1rem, 6.2svh, 4rem);
+  gap: 0.35rem;
+  color: #425b4d;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  pointer-events: none;
+}
+
+@media (min-width: 680px) {
+  .hero-stage[data-mode] .hero-title {
+    font-size: clamp(2rem, min(4.55vw, 7.4svh), 5.55rem);
+  }
 }
 
 @media (max-width: 679px) {
-  .hero-actions > :not(:last-child) {
-    padding-inline: 0.78rem;
-    font-size: 0.73rem;
-    gap: 0.28rem;
+  .hero-actions > a {
+    gap: 0.35rem;
   }
+
   .hero-actions svg {
-    width: 0.86rem;
-    height: 0.86rem;
+    width: 0.85rem;
+    height: 0.85rem;
   }
-  .hero-index-inner {
-    display: grid;
-    gap: 0.46rem;
-    align-content: center;
-    padding-block: 0.8rem;
+
+  .hero-stage[data-mode] .hero-brand-intro {
+    top: 17.8%;
   }
-  .hero-index-label {
-    border: 0;
-    padding: 0;
+
+  .hero-stage[data-mode] .hero-title {
+    font-size: clamp(1.15rem, min(6.75vw, 6.2svh), 2.8rem);
   }
-  .hero-index ul {
-    justify-content: flex-start;
-    font-size: 0.7rem;
+
+  .hero-stage[data-mode] .hero-intro {
+    top: 72.25%;
+  }
+
+  .hero-stage[data-mode] .hero-caption h2 {
+    font-size: clamp(1.22rem, min(6.2vw, 4.25svh), 1.72rem);
   }
 }
 
-@media (min-width: 680px) and (max-width: 1099px) {
-  .hero-canvas {
-    padding: 3.6rem 1.9rem 0;
-  }
-  .hero-title {
-    font-size: clamp(3.55rem, 7.15vw, 4.85rem);
-  }
-  .hero-gallery {
-    display: grid;
-    grid-template-columns: repeat(var(--tablet-cards, 4), minmax(0, 1fr));
-    width: min(100%, 940px);
-    gap: 0.72rem;
-    margin-top: 1.9rem;
-  }
-  .hero-tile {
-    aspect-ratio: 1.23;
-  }
-  .hero-index-inner {
-    gap: 1.1rem;
-  }
-  .hero-index ul {
-    justify-content: flex-start;
-    column-gap: 1rem;
-  }
-}
-
-@media (min-width: 840px) and (max-width: 1099px) {
-  .hero-gallery {
-    --tablet-cards: 5;
-  }
-  .hero-card--education[data-tablet] {
-    display: block;
-  }
-}
-
-@media (min-width: 960px) and (max-width: 1099px) {
-  .hero-gallery {
-    --tablet-cards: 6;
-  }
-  .hero-card--vision[data-tablet] {
-    display: block;
-  }
-}
-
-@media (min-width: 1100px) {
-  .hero-canvas {
-    min-height: clamp(605px, 44.5vw, 702px);
-    padding: clamp(4rem, 4.85vw, 6rem) 0 3.85rem;
-    display: grid;
-    align-content: start;
-  }
-
-  .hero-content {
-    width: 57%;
-  }
-  .hero-tagline {
-    font-size: 0.74rem;
-  }
-  .hero-title {
-    font-size: clamp(3.55rem, 5.45vw, 5.65rem);
-    margin-top: 1.4rem;
-  }
-  .hero-line {
-    white-space: nowrap;
-  }
-  .hero-copy {
-    width: min(76%, 31rem);
-    margin-top: 1.3rem;
-  }
+@media (max-width: 359px) {
   .hero-actions {
-    margin-top: 1.5rem;
-  }
-  .hero-margin {
-    position: absolute;
-    left: 4%;
-    right: 4%;
-    bottom: 0;
-    padding-block: 0.85rem 1.05rem;
-    z-index: 4;
+    gap: 0.34rem;
   }
 
-  .hero-gallery {
-    display: block;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    pointer-events: none;
-    z-index: 1;
-  }
-  .hero-traces {
-    display: block;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    inset: 0;
-    stroke: #8c867f75;
-    stroke-width: 1;
-    stroke-dasharray: 2 6;
-  }
-  .hero-traces-marks {
-    stroke: #77736790;
-    stroke-dasharray: none;
-  }
-
-  .hero-card:nth-of-type(n) {
-    --tile-rest-y: 0px;
-    --tile-rest-tilt: var(--tile-tilt);
-    display: block;
-    position: absolute;
-    width: var(--tile-width);
-    left: var(--tile-left, auto);
-    right: var(--tile-right, auto);
-    top: var(--tile-top);
-    pointer-events: auto;
-    z-index: var(--tile-layer, 1);
-  }
-  .hero-card:hover,
-  .hero-card:focus-within {
-    z-index: 4;
-  }
-  .hero-tile {
-    padding: 8px;
-    border-radius: 19px;
-  }
-  .hero-tile-body {
-    border-radius: 12px;
-  }
-  .hero-tile-caption {
-    font-size: clamp(9.4px, 0.87vw, 12px);
-    padding: 0.53rem 0.15rem 0.07rem;
-  }
-  .hero-card--ai {
-    --tile-width: 13.4%;
-    --tile-left: 5%;
-    --tile-top: 8.4%;
-    --tile-ratio: 0.98;
-  }
-  .hero-card--healthcare {
-    --tile-width: 14.35%;
-    --tile-right: 5.6%;
-    --tile-top: 9.1%;
-    --tile-ratio: 1.2;
-  }
-  .hero-card--education {
-    --tile-width: 13.6%;
-    --tile-left: 8.15%;
-    --tile-top: 70%;
-    --tile-ratio: 1.42;
-  }
-  .hero-card--commerce {
-    --tile-width: 14.35%;
-    --tile-right: 7.35%;
-    --tile-top: 69%;
-    --tile-ratio: 1.35;
-  }
-  .hero-card--vision {
-    --tile-width: 11.1%;
-    --tile-left: 3.1%;
-    --tile-top: 44%;
-    --tile-ratio: 1.32;
-  }
-  .hero-card--creative {
-    --tile-width: 11.4%;
-    --tile-right: 2.95%;
-    --tile-top: 41%;
-    --tile-ratio: 1.09;
-  }
-  .hero-card--automation {
-    --tile-width: 10.65%;
-    --tile-left: 14.65%;
-    --tile-top: 50.8%;
-    --tile-ratio: 1.42;
-    --tile-layer: 2;
-  }
-  .hero-card--enterprise {
-    --tile-width: 11.6%;
-    --tile-right: 14.95%;
-    --tile-top: 47%;
-    --tile-ratio: 1.37;
-    --tile-layer: 2;
+  .hero-actions > a {
+    gap: 0.23rem;
+    padding-inline: 0.54rem;
   }
 }
 
-@media (min-width: 1100px) and (max-width: 1230px) {
-  .hero-card--enterprise .hero-tile-caption {
-    font-size: 9.1px;
-  }
-}
-
-/* The second card library belongs to the desktop scroll scene only. */
-.hero-card[data-hero-industry] {
-  display: none;
-}
-
-/* Pin only the natural artboard + capability index: forcing a viewport-height
-   wrapper left unused pin space between the index and About on tall screens. */
-@media (min-width: 1100px) and (min-height: 680px) and (prefers-reduced-motion: no-preference) {
-  .hero-canvas {
-    min-height: min(
-      max(
-        clamp(605px, 44.5vw, 702px),
-        min(880px, 100svh - var(--header-height) - 134px)
-      ),
-      100svh - var(--header-height) - 1px
-    );
-    padding-top: min(clamp(4rem, 4.85vw, 6rem), max(3.2rem, 18svh - 69px));
-    padding-bottom: min(3.85rem, max(3.4rem, 10svh - 14px));
-  }
-  .hero-title {
-    font-size: clamp(3.55rem, min(5.45vw, (100svh - 510px) / 3.05), 5.65rem);
+@media (max-height: 650px) {
+  .hero-stage[data-mode] .hero-scroll-note {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: clamp(0.65rem, 2.6svh, 1.05rem);
+    gap: 0.45rem;
   }
 
-  .hero-gallery {
-    perspective: 1180px;
-    transform-style: preserve-3d;
-  }
-  .hero-card[data-hero-industry] {
-    display: block;
-    visibility: hidden;
-  }
-  .hero-scrim {
-    display: block;
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    opacity: 0;
-    background: radial-gradient(
-      ellipse 38% 57% at 50% 45%,
-      #fbfaf6 32%,
-      rgb(251 250 246 / 85%) 64%,
-      transparent 100%
-    );
-  }
-  .hero-scene-label {
-    display: block;
-    position: absolute;
-    inset: 11% 0 auto;
-    z-index: 2;
-    color: var(--green-ink);
-    text-align: center;
-    letter-spacing: 0.25em;
-    opacity: 0;
-    transform: translateY(10px);
-    pointer-events: none;
+  .hero-stage[data-mode] .hero-actions {
+    margin-top: 0.56rem;
   }
 
-  /* Keyboard access to the original actions shouldn't depend on scroll time. */
-  .hero-content:has(.hero-actions :focus-visible) {
-    pointer-events: auto !important;
-  }
-  .hero-content:has(.hero-actions :focus-visible) > * {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .hero-content:has(.hero-actions :focus-visible) .hero-actions {
-    pointer-events: auto !important;
-  }
-  .hero-canvas:has(.hero-actions :focus-visible) .hero-scrim {
-    opacity: 1 !important;
-  }
-  .hero-canvas:has(.hero-actions :focus-visible) .hero-scene-label {
-    opacity: 0 !important;
-  }
-  /* Keep a tabbed-to card out of the text's scrim and any foreground overlap. */
-  .hero-card:has(.hero-tile:focus-visible) {
-    opacity: 1 !important;
-    visibility: visible !important;
-  }
-  .hero-card:not([data-hero-industry]):has(.hero-tile:focus-visible) {
-    transform: rotate(var(--tile-tilt)) !important;
-  }
-
-  .hero-margin-actions {
-    gap: 0.85rem;
-  }
-  .hero-progress {
-    display: block;
-    width: clamp(35px, 4.2vw, 68px);
-    height: 2px;
-    border-radius: 2px;
-    background: #42605426;
-  }
-  .hero-progress-fill {
-    display: block;
-    height: 100%;
-    background: var(--green-ink);
-    border-radius: inherit;
-    transform: scaleX(0);
-    transform-origin: left center;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-tile:hover,
-  .hero-tile:focus-visible {
-    scale: none;
+  .hero-stage[data-mode] .hero-intro {
+    top: 71.3%;
   }
 }

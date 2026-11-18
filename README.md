@@ -15,9 +15,15 @@ Run `npm run build` to compile the production site into `dist/`. Serve the entir
 
 `public/logo/MedixoEmblemWhite.svg` is the original Medixo AI emblem and is used unchanged on dark surfaces. `MedixoEmblemDark.svg` changes only its two visible gradient colours for light surfaces. The navbar, mobile menu, footer, credits page, and favicon use these public SVGs directly.
 
+## Portrait hero gallery
+
+`src/data/heroGallery.js` pairs the eight catalogue services in `src/data/services.js` with editorial portraits and adds four industry scenes without changing the directory or inquiry choices. One reversible GSAP timeline moves the photos along the mirrored 3D rail in `src/animations/heroCorridor.js`. Each foreground hold pairs an enlarged portrait with only its title below. After the final hold the same camera recedes and advances half a station back to the opening composition. The headline, supporting label, and CTAs return, then the scroll cue appears before the hero releases into About. Tablet reduces the visible bank; phones use one portrait slot and swap back to the opening photo at the end of the reset. Reduced motion and viewports shorter than 530px get the twelve figures in normal flow without the cue.
+
+Run `node --test` for the corridor geometry checks. In the browser, scroll through the twelve portraits, the restored introduction, and into About. Reverse through the reset to card twelve and back to the top. Toggle reduced motion to verify the static fallback.
+
 ## Industry catalogue
 
-`src/data/industries.js` is the source for sector names, imagery, capabilities, the gallery directory, and inquiry options. Use `spotlight: true` to feature a sector first in the gallery. To include it in the desktop hero, assign an unused `hero.slot` from `HERO_CARDS` in `src/data/navigation.js` and a short `hero.label`. The opening hero imagery is independent of this mapping. Catalogue photography illustrates service capabilities, not client or project work. Portfolio entries remain in `src/data/projects.js`.
+`src/data/industries.js` is the source for sector names, imagery, capabilities, the gallery directory, and inquiry options. Use `spotlight: true` to feature a sector first in the gallery. Catalogue photography illustrates service capabilities, not client or project work. Portfolio entries remain in `src/data/projects.js`.
 
 ## Photography and product views
 
