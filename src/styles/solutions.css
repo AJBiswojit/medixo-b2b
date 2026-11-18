@@ -1,0 +1,184 @@
+.solutions-section {
+  background: var(--surface-neutral);
+  border-block: 1px solid var(--border-subtle);
+}
+.solutions-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.53rem;
+  margin-top: clamp(1.75rem, 3.5vw, 3.15rem);
+}
+.solution-challenge {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr) 1.85rem;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 59px;
+  padding: 0.55rem 0.85rem;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e2dfd7;
+  border-radius: 13px;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  font-weight: 680;
+  cursor: pointer;
+  scroll-margin-top: calc(var(--header-height) + 13px);
+  transition:
+    background-color 200ms,
+    border-color 200ms;
+}
+.solution-challenge:hover {
+  border-color: #8c8578;
+}
+.solution-challenge[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--scenario-accent) 60%, #202020);
+  background: color-mix(in srgb, var(--scenario-accent) 75%, white);
+  font-weight: 800;
+}
+.solution-arrow {
+  display: grid;
+  width: 1.85rem;
+  height: 1.85rem;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid #e2dfd7;
+  background: #faf9f6;
+  transition:
+    background-color 200ms,
+    color 200ms;
+}
+.solution-challenge[aria-expanded="true"] .solution-arrow {
+  background: #202020;
+  color: #fff;
+  border-color: #202020;
+  rotate: 90deg;
+}
+.solution-panel {
+  min-width: 0;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: clamp(1.12rem, 3.15vw, 2.35rem);
+  background: color-mix(in srgb, var(--scenario-accent) 31%, white);
+  border-radius: var(--radius-panel);
+  border: 1px solid color-mix(in srgb, var(--scenario-accent) 75%, #c9c7be);
+  box-shadow: var(--shadow-subtle);
+}
+.solution-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(circle, #6f6255 0.62px, transparent 0.9px)
+    center/12px 12px;
+  mask-image: radial-gradient(ellipse at 100% 0, #000, transparent 57%);
+  opacity: 0.23;
+}
+.solution-panel-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.42rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid #20202018;
+}
+.solution-panel-meta > :first-child {
+  padding: 0.34rem 0.53rem;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--scenario-accent) 73%, #fff);
+  color: #35352d;
+}
+.solution-panel-intro {
+  margin-block: 1.03rem 1.2rem;
+}
+.solution-panel-intro h3 {
+  font-size: clamp(1.74rem, 2.8vw, 2.65rem);
+  line-height: 1.04;
+  letter-spacing: -0.027em;
+  margin-block: 0.32rem 0.58rem;
+}
+.solution-panel-intro p {
+  font-size: 0.87rem;
+  line-height: 1.63;
+  color: #56554f;
+}
+.solution-panel-intro > :first-child {
+  font-style: italic;
+  font-size: 0.76rem;
+}
+.solution-focus ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.44rem;
+  margin-top: 0.58rem;
+}
+.solution-focus li {
+  display: flex;
+  align-items: center;
+  gap: 0.33rem;
+  border: 1px solid #20202012;
+  padding: 0.49rem 0.56rem;
+  border-radius: 8px;
+  background: #fff9;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.38;
+}
+.solution-focus li svg {
+  flex: none;
+  color: #4b6558;
+}
+.solution-services {
+  margin-block: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #20202018;
+}
+.solution-services ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.56rem;
+}
+.solution-services li {
+  font-size: 0.69rem;
+  font-weight: 700;
+  background: #fff9;
+  padding: 0.27rem 0.49rem;
+  border: 1px solid #20202014;
+  border-radius: 100px;
+}
+@media (max-width: 370px) {
+  .solution-focus ul {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 960px) {
+  .solutions-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.87fr) minmax(0, 1.13fr);
+    grid-template-rows: repeat(var(--scenario-count), minmax(0, auto));
+    gap: 0.58rem clamp(1rem, 3.2vw, 2.6rem);
+  }
+  .solution-challenge {
+    grid-column: 1;
+  }
+  .solution-challenge[aria-expanded="true"] .solution-arrow {
+    rotate: none;
+  }
+  .solution-panel {
+    grid-column: 2;
+    grid-row: 1 / span var(--scenario-count);
+    align-self: start;
+  }
+}
+@media (min-width: 1100px) and (min-height: 790px) {
+  .solution-panel {
+    position: sticky;
+    top: calc(var(--header-height) + 20px);
+  }
+}

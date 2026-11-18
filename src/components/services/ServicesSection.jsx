@@ -1,136 +1,109 @@
 import React, { useEffect, useState } from "react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { SERVICES } from "../../data/services";
 import { useGsap } from "../../hooks/useGsap";
 import {
   revealStagger,
-  refreshScrollTriggers,
+  revealCardGroups,
 } from "../../animations/scrollAnimations";
+import { scrollToSection } from "../../utils/validation";
 import SectionHeading from "../common/SectionHeading";
+import Button from "../common/Button";
 import ServiceCard from "./ServiceCard";
+import "../../styles/services.css";
 
 export default function ServicesSection({
-  highlightedServiceId,
+  highlightedService,
   onInquireService,
 }) {
-  // Default open the first two signature AI service practices
   const [expandedIds, setExpandedIds] = useState(["ai-ml", "gen-agentic-ai"]);
-
   const sectionRef = useGsap((scope) => {
-    revealStagger("[data-reveal]", scope, { stagger: 0.08 });
-    revealStagger("[data-service-card]", scope, {
-      trigger: scope.querySelector("[data-services-grid]"),
-      stagger: 0.075,
-      y: 28,
-    });
-  }, []);
+    revealStagger("[data-reveal]", scope);
+    revealCardGroups("[data-service-card]", scope, { y: 22, stagger: 0.09 });
+  });
 
-  // Expand a specific service if navigated from footer or external trigger
+  const expand = (id) =>
+    setExpandedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
   useEffect(() => {
-    if (!highlightedServiceId) return;
-    setExpandedIds((prev) =>
-      prev.includes(highlightedServiceId)
-        ? prev
-        : [...prev, highlightedServiceId]
-    );
-  }, [highlightedServiceId]);
-
-  const handleToggle = (id) => {
-    setExpandedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-    window.setTimeout(() => refreshScrollTriggers(), 400);
-  };
+    if (highlightedService) expand(highlightedService.id);
+  }, [highlightedService]);
 
   const allExpanded = expandedIds.length === SERVICES.length;
-
-  const handleToggleAll = () => {
-    setExpandedIds(allExpanded ? [] : SERVICES.map((s) => s.id));
-    window.setTimeout(() => refreshScrollTriggers(), 400);
-  };
-
-  const handleQuickJump = (id) => {
-    if (!expandedIds.includes(id)) {
-      setExpandedIds((prev) => [...prev, id]);
-    }
-    const cardEl = document.getElementById(`service-${id}`);
-    if (cardEl) {
-      cardEl.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
 
   return (
     <section
       id="services"
       ref={sectionRef}
       aria-labelledby="services-heading"
-      className="bg-[#F5F5F3] py-20 sm:py-28 lg:py-32 border-b border-[#EAEAEA]"
+      className="section-shell services-section"
     >
       <div className="editorial-container">
-        {/* Header & View Controls */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div id="services-heading">
-            <SectionHeading
-              eyebrow="Our Services"
-              title="Comprehensive Technology Solutions for Modern Businesses."
-              subtitle="Eight core engineering practices covering artificial intelligence, generative and agentic systems, enterprise RAG, computer vision, custom software, automation, and data engineering."
-              accentColor="#ACC6C1"
-            />
-          </div>
-
-          <div data-reveal className="shrink-0">
-            <button
-              type="button"
-              onClick={handleToggleAll}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-[13px] font-medium bg-white border border-[#DFDFDC] text-[#202020] hover:border-[#202020] transition-colors cursor-pointer"
+        <SectionHeading
+          id="services-heading"
+          index="02"
+          eyebrow="Our Services"
+          spread
+          title="Comprehensive Technology Solutions for Modern Businesses."
+          subtitle="Eight core engineering practices covering artificial intelligence, generative and agentic systems, enterprise RAG, computer vision, custom software, automation, and data engineering."
+          action={
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={allExpanded ? ArrowUp : ArrowDown}
+              onClick={() =>
+                setExpandedIds(
+                  allExpanded ? [] : SERVICES.map((service) => service.id),
+                )
+              }
             >
               {allExpanded ? "Collapse All Details" : "Expand All 8 Services"}
-            </button>
-          </div>
-        </div>
+            </Button>
+          }
+        />
 
-        {/* Service Directory Quick-Jump Strip */}
-        <div
+        <nav
           data-reveal
           aria-label="Service quick navigation"
-          className="mt-9 pb-2 flex items-center gap-2 overflow-x-auto no-scrollbar"
-        >
-          {SERVICES.map((service) => {
-            const isOpen = expandedIds.includes(service.id);
-            return (
-              <button
-                key={service.id}
-                type="button"
-                onClick={() => handleQuickJump(service.id)}
-                className={[
-                  "shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-[12.5px] font-medium border transition-all duration-200 cursor-pointer",
-                  isOpen
-                    ? "bg-[#171717] text-white border-[#171717]"
-                    : "bg-white text-[#555555] border-[#EAEAEA] hover:border-[#202020] hover:text-[#202020]",
-                ].join(" ")}
-              >
-                <span className="opacity-65">{service.number}</span>
-                <span>{service.title.split("&")[0].trim()}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* 8 Interactive Service Cards Grid */}
-        <div
-          data-services-grid
-          className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 items-start"
+          className="service-directory no-scrollbar"
         >
           {SERVICES.map((service) => (
+            <button
+              key={service.id}
+              type="button"
+              aria-controls={`service-panel-${service.id}`}
+              aria-expanded={expandedIds.includes(service.id)}
+              onClick={() => {
+                expand(service.id);
+                scrollToSection(`service-${service.id}`);
+              }}
+            >
+              <span
+                className="service-directory-dot"
+                style={{ backgroundColor: service.accent }}
+                aria-hidden="true"
+              />
+              {service.title.split("&")[0].trim()}
+            </button>
+          ))}
+        </nav>
+
+        <div className="services-grid">
+          {SERVICES.map((service, index) => (
             <ServiceCard
               key={service.id}
               service={service}
+              signature={index < 2}
               isExpanded={expandedIds.includes(service.id)}
-              onToggle={handleToggle}
-              onInquire={(serviceTitle) => {
-                if (onInquireService) {
-                  onInquireService({ serviceRequired: serviceTitle });
-                }
-              }}
+              onToggle={(id) =>
+                setExpandedIds((prev) =>
+                  prev.includes(id)
+                    ? prev.filter((item) => item !== id)
+                    : [...prev, id],
+                )
+              }
+              onInquire={(serviceRequired) =>
+                onInquireService?.({ serviceRequired })
+              }
             />
           ))}
         </div>

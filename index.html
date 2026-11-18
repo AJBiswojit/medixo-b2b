@@ -1,9 +1,11 @@
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MEDIXO AI — Building Intelligent Solutions. Engineering the Future.</title>
+    <title>
+      MEDIXO AI — Building Intelligent Solutions. Engineering the Future.
+    </title>
     <meta
       name="description"
       content="Medixo AI is an AI-driven software development and technology solutions company specializing in Artificial Intelligence, Generative AI, Agentic AI, Machine Learning, RAG architectures, Computer Vision, custom software engineering, and business automation."
@@ -50,12 +52,27 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23171717'/%3E%3Cpath d='M16 45V19h6.4l9.6 15.8L41.6 19H48v26h-5.8V28.6l-8.4 13.5h-3.6l-8.4-13.5V45H16z' fill='%23FFFFFF'/%3E%3Ccircle cx='49' cy='15' r='3.5' fill='%23ACC6C1'/%3E%3C/svg%3E"
     />
 
-    <!-- Editorial Typography: DM Serif Display + Manrope -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Local editorial typefaces: no third-party font request -->
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/dm-serif-display-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/dm-serif-display-italic.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/manrope-variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
 
     <!-- Verified Organization Structured Data (no unverified contact claims) -->
@@ -80,7 +97,9 @@
       }
     </script>
   </head>
-  <body class="bg-white text-[#202020] antialiased selection:bg-[#E5D3C9]/60 selection:text-[#202020]">
+  <body
+    class="bg-white text-[#202020] antialiased selection:bg-[#E5D3C9]/60 selection:text-[#202020]"
+  >
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

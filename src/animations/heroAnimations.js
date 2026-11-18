@@ -1,149 +1,148 @@
-import {
-  gsap,
-  ANIMATION_CONFIG,
-  prefersReducedMotion,
-} from "./animationConfig";
+import { gsap, ScrollTrigger, ANIMATION_CONFIG } from "./animationConfig";
 
-/**
- * Orchestrates the hero entrance timeline and responsive ambient floating motion.
- * Uses gsap.matchMedia() aligned with Tailwind's lg (1024px) breakpoint.
- */
-export function initHeroAnimations(scopeEl) {
-  if (!scopeEl || prefersReducedMotion()) {
-    return null;
-  }
-
-  const tl = gsap.timeline({
+export function initHeroAnimations(scope, motionControl) {
+  const select = gsap.utils.selector(scope);
+  const cards = select("[data-hero-entry]");
+  const visibleCards = cards.filter((card) => card.getClientRects().length);
+  const entrance = gsap.timeline({
     defaults: { ease: ANIMATION_CONFIG.ease.editorial },
   });
 
-  // Eyebrow / tagline
-  const eyebrow = scopeEl.querySelectorAll("[data-hero-eyebrow]");
-  if (eyebrow.length) {
-    tl.from(
-      eyebrow,
+  entrance
+    .from(
+      select("[data-hero-backdrop]"),
+      { opacity: 0, duration: 0.62, clearProps: "opacity" },
+      0,
+    )
+    .from(
+      select("[data-hero-eyebrow]"),
+      { opacity: 0, y: 8, duration: 0.48, clearProps: "opacity,transform" },
+      0.04,
+    )
+    .from(
+      select("[data-hero-word]"),
       {
-        y: 16,
-        opacity: 0,
-        duration: 0.65,
+        yPercent: 108,
+        duration: 0.75,
+        stagger: 0.043,
         clearProps: "transform",
       },
-      0.05
-    );
-  }
-
-  // Staggered headline words
-  const words = scopeEl.querySelectorAll("[data-hero-word]");
-  if (words.length) {
-    tl.from(
-      words,
+      0.1,
+    )
+    .from(
+      select("[data-hero-copy]"),
       {
-        yPercent: 105,
         opacity: 0,
-        duration: 0.9,
-        stagger: ANIMATION_CONFIG.stagger.tight,
-        ease: ANIMATION_CONFIG.ease.smooth,
-        clearProps: "transform",
+        y: 11,
+        duration: 0.52,
+        stagger: 0.07,
+        clearProps: "opacity,transform",
       },
-      0.14
-    );
-  }
-
-  // Supporting paragraphs
-  const copy = scopeEl.querySelectorAll("[data-hero-copy]");
-  if (copy.length) {
-    tl.from(
-      copy,
+      0.32,
+    )
+    .from(
+      visibleCards,
       {
-        y: 18,
+        x: (_, card) => Number(card.dataset.fromX),
+        y: (_, card) => Number(card.dataset.fromY),
+        rotation: (_, card) => Number(card.dataset.depth) * 5,
+        scale: 0.94,
         opacity: 0,
-        duration: 0.72,
-        stagger: 0.09,
-        clearProps: "transform",
+        duration: 0.86,
+        stagger: 0.052,
+        clearProps: "opacity,transform",
       },
-      0.42
-    );
-  }
-
-  // CTA buttons
-  const ctas = scopeEl.querySelectorAll("[data-hero-cta]");
-  if (ctas.length) {
-    tl.from(
-      ctas,
+      0.39,
+    )
+    .from(
+      select("[data-hero-actions] > *"),
       {
-        y: 16,
         opacity: 0,
-        duration: 0.62,
-        stagger: 0.08,
-        clearProps: "transform",
+        y: 10,
+        duration: 0.52,
+        stagger: 0.07,
+        clearProps: "opacity,transform",
       },
-      0.54
+      0.58,
     );
-  }
 
-  // Responsive visual choreography synchronized to lg: 1024px
-  const mm = gsap.matchMedia();
+  const media = gsap.matchMedia(scope);
+  media.add(
+    {
+      desktop: "(min-width: 1100px)",
+      finePointer: "(hover: hover) and (pointer: fine)",
+    },
+    ({ conditions }) => {
+      if (!conditions.desktop) return;
+      let paused = scope.dataset.motionPaused === "true";
+      let visible = false;
+      const ambient = select("[data-hero-drift]").map((layer, i) =>
+        gsap.to(layer, {
+          y: i % 2 ? -7 : 6,
+          rotation: i % 2 ? 0.85 : -0.85,
+          duration: 3.8 + (i % 4) * 0.48,
+          repeat: -1,
+          yoyo: true,
+          ease: ANIMATION_CONFIG.ease.float,
+          paused: true,
+        }),
+      );
 
-  mm.add("(min-width: 1024px)", () => {
-    const accents = scopeEl.querySelectorAll("[data-hero-accent]");
-    if (accents.length) {
-      gsap.from(accents, {
-        scale: 0.85,
-        opacity: 0,
-        duration: 1.0,
-        stagger: 0.1,
-        delay: 0.2,
-        ease: ANIMATION_CONFIG.ease.editorial,
+      const syncMotion = () =>
+        ambient.forEach((tween) => tween.paused(paused || !visible));
+      const visibility = ScrollTrigger.create({
+        trigger: scope,
+        start: "top bottom",
+        end: "bottom top",
+        onToggle: ({ isActive }) => {
+          visible = isActive;
+          syncMotion();
+        },
       });
-    }
+      visible = visibility.isActive;
+      syncMotion();
 
-    const desktopCards = scopeEl.querySelectorAll("[data-hero-card]");
-    desktopCards.forEach((card, index) => {
-      const fromX = Number(card.dataset.fromX || 0);
-      const fromY = Number(card.dataset.fromY || 44);
-      const fromRot = Number(card.dataset.fromRotate || 0);
-      const floatAmp = Number(card.dataset.floatAmp || 9);
-      const floatRot = Number(card.dataset.floatRot || 1.0);
-      const floatDur = Number(card.dataset.floatDur || 4.4);
+      let removePointerListeners;
+      let resetPointer;
+      if (conditions.finePointer) {
+        const canvas = scope.querySelector(".hero-canvas");
+        const gallery = scope.querySelector(".hero-gallery");
+        const xTo = gsap.quickTo(gallery, "x", {
+          duration: 0.72,
+          ease: "power3.out",
+        });
+        const yTo = gsap.quickTo(gallery, "y", {
+          duration: 0.72,
+          ease: "power3.out",
+        });
+        const move = (event) => {
+          if (paused || event.pointerType !== "mouse") return;
+          xTo((event.clientX / window.innerWidth - 0.5) * 12);
+          yTo((event.clientY / window.innerHeight - 0.5) * 8);
+        };
+        resetPointer = () => {
+          xTo(0);
+          yTo(0);
+        };
+        canvas.addEventListener("pointermove", move, { passive: true });
+        canvas.addEventListener("pointerleave", resetPointer);
+        removePointerListeners = () => {
+          canvas.removeEventListener("pointermove", move);
+          canvas.removeEventListener("pointerleave", resetPointer);
+        };
+      }
 
-      gsap.from(card, {
-        x: fromX,
-        y: fromY,
-        rotation: `+=${fromRot}`,
-        scale: 0.92,
-        opacity: 0,
-        duration: 1.05,
-        delay: 0.24 + index * 0.085,
-        ease: ANIMATION_CONFIG.ease.smooth,
-      });
+      motionControl.current = (shouldPause) => {
+        paused = shouldPause;
+        if (paused) resetPointer?.();
+        syncMotion();
+      };
+      return () => {
+        motionControl.current = null;
+        removePointerListeners?.();
+      };
+    },
+  );
 
-      gsap.to(card, {
-        y: `-=${floatAmp}`,
-        rotation: `+=${floatRot}`,
-        duration: floatDur,
-        repeat: -1,
-        yoyo: true,
-        ease: ANIMATION_CONFIG.ease.float,
-        delay: 1.35 + index * 0.2,
-      });
-    });
-  });
-
-  mm.add("(max-width: 1023px)", () => {
-    const mobileCards = scopeEl.querySelectorAll("[data-hero-mobile-card]");
-    if (mobileCards.length) {
-      gsap.from(mobileCards, {
-        y: 24,
-        opacity: 0,
-        scale: 0.96,
-        duration: 0.72,
-        stagger: 0.085,
-        delay: 0.45,
-        ease: ANIMATION_CONFIG.ease.editorial,
-        clearProps: "opacity,scale",
-      });
-    }
-  });
-
-  return tl;
+  return () => media.revert();
 }

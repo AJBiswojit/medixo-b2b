@@ -14,7 +14,7 @@ export const PROCESS_STAGES = [
     displayTitle: "Strategize",
     description:
       "Define the technical approach, architecture, technology stack and implementation strategy.",
-    accent: "#ACC6C1",
+    accent: "#DCD5F5",
     deliverable: "System Blueprint",
   },
   {
@@ -32,7 +32,7 @@ export const PROCESS_STAGES = [
     displayTitle: "Develop",
     description:
       "Build reliable software applications and integrate intelligent technologies.",
-    accent: "#F5F5F3",
+    accent: "#D8E9F7",
     deliverable: "Core Engineering & AI",
   },
   {
@@ -41,7 +41,7 @@ export const PROCESS_STAGES = [
     displayTitle: "Test & Secure",
     description:
       "Perform functional testing, quality assurance, security validation and performance optimization.",
-    accent: "#ACC6C1",
+    accent: "#F7E4B8",
     deliverable: "QA & Hardening",
   },
   {
@@ -50,7 +50,7 @@ export const PROCESS_STAGES = [
     displayTitle: "Deploy & Scale",
     description:
       "Deploy applications and continuously improve their performance, reliability and scalability.",
-    accent: "#E5D3C9",
+    accent: "#DCE9D5",
     deliverable: "Production & Evolution",
   },
 ];

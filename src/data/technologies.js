@@ -10,25 +10,25 @@ export const TECHNOLOGY_CATEGORIES = [
       {
         name: "Python",
         role: "AI, ML & Backend",
-        iconUrl: "https://cdn.simpleicons.org/python/202020",
+        iconUrl: "/marks/python.svg",
         monogram: "Py",
       },
       {
         name: "Java",
         role: "Enterprise Systems",
-        iconUrl: "https://cdn.simpleicons.org/openjdk/202020",
+        iconUrl: "/marks/openjdk.svg",
         monogram: "Jv",
       },
       {
         name: "JavaScript",
         role: "Web Engineering",
-        iconUrl: "https://cdn.simpleicons.org/javascript/202020",
+        iconUrl: "/marks/javascript.svg",
         monogram: "JS",
       },
       {
         name: "TypeScript",
         role: "Typed Applications",
-        iconUrl: "https://cdn.simpleicons.org/typescript/202020",
+        iconUrl: "/marks/typescript.svg",
         monogram: "TS",
       },
       {
@@ -45,42 +45,42 @@ export const TECHNOLOGY_CATEGORIES = [
     shortLabel: "AI & ML",
     description:
       "Production libraries for deep learning, classical machine learning, real-time object detection, and visual perception.",
-    accent: "#ACC6C1",
+    accent: "#DCE9D5",
     items: [
       {
         name: "TensorFlow",
         role: "Deep Learning",
-        iconUrl: "https://cdn.simpleicons.org/tensorflow/202020",
+        iconUrl: "/marks/tensorflow.svg",
         monogram: "TF",
       },
       {
         name: "PyTorch",
         role: "Neural Networks",
-        iconUrl: "https://cdn.simpleicons.org/pytorch/202020",
+        iconUrl: "/marks/pytorch.svg",
         monogram: "PT",
       },
       {
         name: "Scikit-learn",
         role: "Predictive Modeling",
-        iconUrl: "https://cdn.simpleicons.org/scikitlearn/202020",
+        iconUrl: "/marks/scikitlearn.svg",
         monogram: "SK",
       },
       {
         name: "OpenCV",
         role: "Image Processing",
-        iconUrl: "https://cdn.simpleicons.org/opencv/202020",
+        iconUrl: "/marks/opencv.svg",
         monogram: "CV",
       },
       {
         name: "YOLO",
         role: "Object Detection",
-        iconUrl: "https://cdn.simpleicons.org/ultralytics/202020",
+        iconUrl: "/marks/ultralytics.svg",
         monogram: "YL",
       },
       {
         name: "Hugging Face",
         role: "Transformers & Models",
-        iconUrl: "https://cdn.simpleicons.org/huggingface/202020",
+        iconUrl: "/marks/huggingface.svg",
         monogram: "HF",
       },
     ],
@@ -91,30 +91,30 @@ export const TECHNOLOGY_CATEGORIES = [
     shortLabel: "Generative AI",
     description:
       "Orchestration frameworks, agentic graphs, retrieval architectures, model context protocols, and frontier LLM integrations.",
-    accent: "#F6EAEA",
+    accent: "#DCD5F5",
     items: [
       {
         name: "LangChain",
         role: "LLM Orchestration",
-        iconUrl: "https://cdn.simpleicons.org/langchain/202020",
+        iconUrl: "/marks/langchain.svg",
         monogram: "LC",
       },
       {
         name: "LangGraph",
         role: "Stateful Agents",
-        iconUrl: "https://cdn.simpleicons.org/langgraph/202020",
+        iconUrl: "/marks/langgraph.svg",
         monogram: "LG",
       },
       {
         name: "CrewAI",
         role: "Multi-Agent Workflows",
-        iconUrl: "",
+        iconUrl: "/marks/crewai.svg",
         monogram: "CA",
       },
       {
         name: "MCP",
         role: "Model Context Protocol",
-        iconUrl: "https://cdn.simpleicons.org/modelcontextprotocol/202020",
+        iconUrl: "/marks/mcp.svg",
         monogram: "MCP",
       },
       {
@@ -126,25 +126,25 @@ export const TECHNOLOGY_CATEGORIES = [
       {
         name: "OpenAI",
         role: "LLM APIs",
-        iconUrl: "",
+        iconUrl: "/marks/openai.svg",
         monogram: "OA",
       },
       {
         name: "Anthropic Claude",
         role: "Reasoning Models",
-        iconUrl: "https://cdn.simpleicons.org/anthropic/202020",
+        iconUrl: "/marks/claude.svg",
         monogram: "AC",
       },
       {
         name: "Google Gemini",
         role: "Multimodal LLMs",
-        iconUrl: "https://cdn.simpleicons.org/googlegemini/202020",
+        iconUrl: "/marks/gemini.svg",
         monogram: "GM",
       },
       {
         name: "Groq",
         role: "Low-Latency Inference",
-        iconUrl: "",
+        iconUrl: "/marks/groq.svg",
         monogram: "GQ",
       },
     ],
@@ -155,24 +155,24 @@ export const TECHNOLOGY_CATEGORIES = [
     shortLabel: "Backend",
     description:
       "High-throughput service frameworks, RESTful interfaces, and real-time communication layers built for reliability.",
-    accent: "#F5F5F3",
+    accent: "#F7E4B8",
     items: [
       {
         name: "FastAPI",
         role: "Async Python APIs",
-        iconUrl: "https://cdn.simpleicons.org/fastapi/202020",
+        iconUrl: "/marks/fastapi.svg",
         monogram: "FA",
       },
       {
         name: "Django",
         role: "Full-Featured Backend",
-        iconUrl: "https://cdn.simpleicons.org/django/202020",
+        iconUrl: "/marks/django.svg",
         monogram: "DJ",
       },
       {
         name: "Spring Boot",
         role: "Java Microservices",
-        iconUrl: "https://cdn.simpleicons.org/springboot/202020",
+        iconUrl: "/marks/springboot.svg",
         monogram: "SB",
       },
       {
@@ -195,36 +195,36 @@ export const TECHNOLOGY_CATEGORIES = [
     shortLabel: "Frontend",
     description:
       "Modern interface technologies delivering accessible, responsive, and refined web experiences across every device.",
-    accent: "#E5D3C9",
+    accent: "#D8E9F7",
     items: [
       {
         name: "React.js",
         role: "Component Interfaces",
-        iconUrl: "https://cdn.simpleicons.org/react/202020",
+        iconUrl: "/marks/react.svg",
         monogram: "Re",
       },
       {
         name: "Next.js",
         role: "Web Applications",
-        iconUrl: "https://cdn.simpleicons.org/nextdotjs/202020",
+        iconUrl: "/marks/nextdotjs.svg",
         monogram: "Nx",
       },
       {
         name: "HTML5",
         role: "Semantic Markup",
-        iconUrl: "https://cdn.simpleicons.org/html5/202020",
+        iconUrl: "/marks/html5.svg",
         monogram: "H5",
       },
       {
         name: "CSS3",
         role: "Visual Architecture",
-        iconUrl: "https://cdn.simpleicons.org/css/202020",
+        iconUrl: "/marks/css.svg",
         monogram: "C3",
       },
       {
         name: "Tailwind CSS",
         role: "Design Systems",
-        iconUrl: "https://cdn.simpleicons.org/tailwindcss/202020",
+        iconUrl: "/marks/tailwindcss.svg",
         monogram: "TW",
       },
     ],
@@ -240,31 +240,31 @@ export const TECHNOLOGY_CATEGORIES = [
       {
         name: "PostgreSQL",
         role: "Relational Database",
-        iconUrl: "https://cdn.simpleicons.org/postgresql/202020",
+        iconUrl: "/marks/postgresql.svg",
         monogram: "PG",
       },
       {
         name: "MySQL",
         role: "Transactional SQL",
-        iconUrl: "https://cdn.simpleicons.org/mysql/202020",
+        iconUrl: "/marks/mysql.svg",
         monogram: "MY",
       },
       {
         name: "MongoDB",
         role: "Document Store",
-        iconUrl: "https://cdn.simpleicons.org/mongodb/202020",
+        iconUrl: "/marks/mongodb.svg",
         monogram: "MG",
       },
       {
         name: "Redis",
         role: "Caching & Queues",
-        iconUrl: "https://cdn.simpleicons.org/redis/202020",
+        iconUrl: "/marks/redis.svg",
         monogram: "RD",
       },
       {
         name: "FAISS",
         role: "Similarity Indexing",
-        iconUrl: "https://cdn.simpleicons.org/meta/202020",
+        iconUrl: "",
         monogram: "FS",
       },
       {
@@ -281,36 +281,36 @@ export const TECHNOLOGY_CATEGORIES = [
     shortLabel: "Cloud & DevOps",
     description:
       "Containerization, collaborative version control, automated delivery pipelines, and resilient cloud deployment workflows.",
-    accent: "#F6EAEA",
+    accent: "#F3D5C5",
     items: [
       {
         name: "Docker",
         role: "Containerization",
-        iconUrl: "https://cdn.simpleicons.org/docker/202020",
+        iconUrl: "/marks/docker.svg",
         monogram: "DK",
       },
       {
         name: "Git",
         role: "Version Control",
-        iconUrl: "https://cdn.simpleicons.org/git/202020",
+        iconUrl: "/marks/git.svg",
         monogram: "GT",
       },
       {
         name: "GitHub",
         role: "Code Collaboration",
-        iconUrl: "https://cdn.simpleicons.org/github/202020",
+        iconUrl: "/marks/github.svg",
         monogram: "GH",
       },
       {
         name: "Linux",
         role: "Server Environments",
-        iconUrl: "https://cdn.simpleicons.org/linux/202020",
+        iconUrl: "/marks/linux.svg",
         monogram: "LX",
       },
       {
         name: "CI/CD",
         role: "Automated Delivery",
-        iconUrl: "https://cdn.simpleicons.org/githubactions/202020",
+        iconUrl: "/marks/githubactions.svg",
         monogram: "CI",
       },
       {

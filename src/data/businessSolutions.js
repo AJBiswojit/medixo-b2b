@@ -19,7 +19,7 @@ export const BUSINESS_SOLUTIONS = [
     ],
     recommendedService: "Business Process Automation",
     recommendedIndustry: "",
-    accent: "#E5D3C9",
+    accent: "#F7E4B8",
   },
   {
     id: "company-chatbot",
@@ -41,7 +41,7 @@ export const BUSINESS_SOLUTIONS = [
     ],
     recommendedService: "RAG & Enterprise Knowledge Systems",
     recommendedIndustry: "",
-    accent: "#ACC6C1",
+    accent: "#DCD5F5",
   },
   {
     id: "build-ecommerce",
@@ -85,7 +85,7 @@ export const BUSINESS_SOLUTIONS = [
     ],
     recommendedService: "Business Process Automation",
     recommendedIndustry: "Human Resources",
-    accent: "#F5F5F3",
+    accent: "#DCE9D5",
   },
   {
     id: "camera-detection",
@@ -107,7 +107,7 @@ export const BUSINESS_SOLUTIONS = [
     ],
     recommendedService: "Computer Vision & Deep Learning",
     recommendedIndustry: "Manufacturing & Industrial",
-    accent: "#ACC6C1",
+    accent: "#D8E9F7",
   },
   {
     id: "ai-saas-product",
@@ -151,7 +151,7 @@ export const BUSINESS_SOLUTIONS = [
     ],
     recommendedService: "Generative AI & Agentic AI",
     recommendedIndustry: "Education & EdTech",
-    accent: "#F6EAEA",
+    accent: "#F3D5C5",
   },
   {
     id: "digitize-healthcare",

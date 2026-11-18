@@ -1,88 +1,108 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { TECHNOLOGY_CATEGORIES } from "../../data/technologies";
 import { useGsap } from "../../hooks/useGsap";
 import { revealStagger } from "../../animations/scrollAnimations";
 import SectionHeading from "../common/SectionHeading";
 import TechnologyGrid from "./TechnologyGrid";
+import "../../styles/technologies.css";
 
 export default function TechnologiesSection() {
   const [activeCategoryId, setActiveCategoryId] = useState("genai-llm");
-
-  const sectionRef = useGsap((scope) => {
-    revealStagger("[data-reveal]", scope, { stagger: 0.08 });
+  const tabRefs = useRef([]);
+  const [vertical, setVertical] = useState(
+    () => matchMedia("(min-width: 900px)").matches,
+  );
+  useEffect(() => {
+    const query = matchMedia("(min-width: 900px)");
+    const update = ({ matches }) => setVertical(matches);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
   }, []);
+  const sectionRef = useGsap((scope) => revealStagger("[data-reveal]", scope));
+  const activeCategory = TECHNOLOGY_CATEGORIES.find(
+    (category) => category.id === activeCategoryId,
+  );
 
-  const activeCategory =
-    TECHNOLOGY_CATEGORIES.find((cat) => cat.id === activeCategoryId) ||
-    TECHNOLOGY_CATEGORIES[0];
+  const handleKey = (event, index) => {
+    const last = TECHNOLOGY_CATEGORIES.length - 1;
+    let target;
+    if (event.key === "Home") target = 0;
+    else if (event.key === "End") target = last;
+    else if (["ArrowUp", "ArrowLeft"].includes(event.key))
+      target = index === 0 ? last : index - 1;
+    else if (["ArrowDown", "ArrowRight"].includes(event.key))
+      target = index === last ? 0 : index + 1;
+    else return;
+    event.preventDefault();
+    setActiveCategoryId(TECHNOLOGY_CATEGORIES[target].id);
+    tabRefs.current[target]?.focus();
+  };
 
   return (
     <section
       id="technologies"
       ref={sectionRef}
       aria-labelledby="technologies-heading"
-      className="bg-[#F5F5F3] py-20 sm:py-28 lg:py-32 border-b border-[#EAEAEA]"
+      className="section-shell tech-section"
     >
       <div className="editorial-container">
-        <div id="technologies-heading">
-          <SectionHeading
-            eyebrow="Technology Stack"
-            title="Powered by Modern Technologies."
-            subtitle="We select proven programming languages, machine learning libraries, generative AI frameworks, application backends, and data infrastructure aligned to each project's architecture."
-            accentColor="#E5D3C9"
-          />
-        </div>
+        <SectionHeading
+          id="technologies-heading"
+          index="04"
+          eyebrow="Technology Stack"
+          title="Powered by Modern Technologies."
+          subtitle="We select proven programming languages, machine learning libraries, generative AI frameworks, application backends, and data infrastructure aligned to each project's architecture."
+        />
 
-        {/* Interactive Category Tab Bar */}
-        <div
-          data-reveal
-          role="tablist"
-          aria-label="Technology stack categories"
-          className="mt-10 flex items-center gap-2 overflow-x-auto no-scrollbar pb-2"
-        >
-          {TECHNOLOGY_CATEGORIES.map((cat) => {
-            const isActive = cat.id === activeCategoryId;
-            return (
-              <button
-                key={cat.id}
-                id={`tech-tab-${cat.id}`}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                aria-controls={`tech-panel-${cat.id}`}
-                onClick={() => setActiveCategoryId(cat.id)}
-                className={[
-                  "shrink-0 px-4 sm:px-5 py-2.5 rounded-full text-[13px] font-medium border transition-all duration-250 cursor-pointer",
-                  isActive
-                    ? "bg-[#171717] text-white border-[#171717] shadow-editorial-sm"
-                    : "bg-white text-[#555555] border-[#EAEAEA] hover:border-[#202020] hover:text-[#202020]",
-                ].join(" ")}
-              >
-                <span>{cat.label}</span>
-                <span
-                  className={[
-                    "ml-2 text-[11px]",
-                    isActive ? "text-white/65" : "text-[#999999]",
-                  ].join(" ")}
-                >
-                  {cat.items.length}
-                </span>
-              </button>
-            );
-          })}
+        <div className="tech-board">
+          <div className="tech-tab-column">
+            <p className="editorial-label">Engineering toolkit</p>
+            <div
+              role="tablist"
+              aria-label="Technology stack categories"
+              aria-orientation={vertical ? "vertical" : "horizontal"}
+              className="tech-tablist no-scrollbar"
+            >
+              {TECHNOLOGY_CATEGORIES.map((category, index) => {
+                const active = category.id === activeCategoryId;
+                return (
+                  <button
+                    key={category.id}
+                    ref={(el) => {
+                      tabRefs.current[index] = el;
+                    }}
+                    id={`tech-tab-${category.id}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    title={category.label}
+                    tabIndex={active ? 0 : -1}
+                    aria-controls="technology-panel"
+                    onKeyDown={(event) => handleKey(event, index)}
+                    onClick={() => setActiveCategoryId(category.id)}
+                  >
+                    <span>{category.shortLabel}</span>
+                    <span className="tech-tab-count" aria-hidden="true">
+                      {category.items.length}
+                    </span>
+                    <ChevronRight size={14} aria-hidden="true" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div
+            id="technology-panel"
+            role="tabpanel"
+            aria-labelledby={`tech-tab-${activeCategory.id}`}
+            tabIndex={0}
+            className="tech-panel"
+          >
+            <TechnologyGrid key={activeCategory.id} category={activeCategory} />
+          </div>
         </div>
-
-        {/* Active Technology Category Panel */}
-        <div
-          id={`tech-panel-${activeCategory.id}`}
-          role="tabpanel"
-          aria-labelledby={`tech-tab-${activeCategory.id}`}
-        >
-          <TechnologyGrid category={activeCategory} />
-        </div>
-
-        {/* Transparent Capability Disclaimer */}
-        <p className="mt-10 pt-6 border-t border-[#E4E4E0] text-[12px] text-[#777777] leading-relaxed">
+        <p className="tech-note">
           Technologies shown represent frameworks, languages, platforms, and
           tools supported within Medixo AI engineering and delivery workflows.
           Product names and marks belong to their respective owners and do not

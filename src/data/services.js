@@ -6,7 +6,7 @@ export const SERVICES = [
     shortSummary:
       "Purpose-built machine learning and deep learning models that turn complex business data into structured predictions, classifications, and decision intelligence.",
     icon: "BrainCircuit",
-    accent: "#E5D3C9",
+    accent: "#DCD5F5",
     capabilities: [
       "Predictive Analytics",
       "Machine Learning Models",
@@ -24,7 +24,7 @@ export const SERVICES = [
     shortSummary:
       "Autonomous tool-calling agents, multi-agent systems, and LLM-powered applications designed to reason across tasks, generate structured outputs, and streamline execution.",
     icon: "Sparkles",
-    accent: "#ACC6C1",
+    accent: "#F6EAEA",
     capabilities: [
       "AI Chatbots and Virtual Assistants",
       "Agentic AI Applications",
@@ -43,7 +43,7 @@ export const SERVICES = [
     shortSummary:
       "Grounded retrieval architectures connecting large language models to your proprietary documents, databases, and internal knowledge with semantic precision.",
     icon: "BookOpenCheck",
-    accent: "#F6EAEA",
+    accent: "#D8E9F7",
     capabilities: [
       "Retrieval-Augmented Generation",
       "Enterprise Knowledge Assistants",
@@ -62,7 +62,7 @@ export const SERVICES = [
     shortSummary:
       "End-to-end engineering of resilient web platforms, SaaS products, e-commerce ecosystems, enterprise applications, and cleanly architected backend APIs.",
     icon: "Code2",
-    accent: "#F5F5F3",
+    accent: "#ACC6C1",
     capabilities: [
       "Full-Stack Web Development",
       "Backend Development",
@@ -81,7 +81,7 @@ export const SERVICES = [
     shortSummary:
       "Real-time visual intelligence systems for object detection, tracking, OCR, document recognition, video analytics, and automated quality inspection.",
     icon: "ScanEye",
-    accent: "#ACC6C1",
+    accent: "#F3D5C5",
     capabilities: [
       "Object Detection",
       "Image Classification",
@@ -100,7 +100,7 @@ export const SERVICES = [
     shortSummary:
       "Intelligent workflow systems that eliminate repetitive manual tasks across HR, recruitment, data extraction, reporting, and background business operations.",
     icon: "Workflow",
-    accent: "#E5D3C9",
+    accent: "#F7E4B8",
     capabilities: [
       "HR Automation",
       "Recruitment Automation",
@@ -118,7 +118,7 @@ export const SERVICES = [
     shortSummary:
       "Dependable data pipelines, database architectures, ETL transformations, and analytical systems that prepare organizational data for clear insight and AI readiness.",
     icon: "Database",
-    accent: "#F5F5F3",
+    accent: "#DCE9D5",
     capabilities: [
       "Data Processing",
       "Data Transformation",
@@ -136,7 +136,7 @@ export const SERVICES = [
     shortSummary:
       "Strategic technical guidance, MCP and LLM integration, and architectural optimization to embed intelligent capabilities seamlessly into existing software.",
     icon: "Compass",
-    accent: "#F6EAEA",
+    accent: "#E5D3C9",
     capabilities: [
       "AI Strategy and Consulting",
       "LLM Integration",

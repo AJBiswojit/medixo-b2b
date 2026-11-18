@@ -12,10 +12,10 @@ export const PROJECTS = [
       "Digitizing Fashion Commerce with Intelligent E-commerce Solutions.",
     description:
       "Pratikshya Fashion is a customized e-commerce platform designed for the textile and fashion industry. The platform focuses on providing a seamless online shopping experience while simplifying business operations through integrated management functionalities.",
-    primaryImage: "/images/project-pratikshya.jpg",
+    primaryImage: "/images/project-pratikshya.webp",
     primaryAlt:
       "Curated fashion and artisanal textile showroom representing the Pratikshya Fashion digital commerce platform",
-    secondaryImage: "/images/hero-fashion.jpg",
+    secondaryImage: "/images/hero-fashion.webp",
     secondaryAlt:
       "Draped organic silk and woven textiles in warm beige and soft blush tones",
     layoutVariant: "atelier-split",
@@ -24,6 +24,7 @@ export const PROJECTS = [
     badgeTone: "#E5D3C9",
     // Configurable public URL — set VITE_PROJECT_PRATIKSHYA_URL when publicly deployed
     projectUrl: (env.VITE_PROJECT_PRATIKSHYA_URL || "").trim(),
+    screenshot: (env.VITE_PROJECT_PRATIKSHYA_SCREENSHOT || "").trim(),
     inquiryIndustry: "Retail & E-commerce",
     inquiryService: "Custom Software Development",
     technologies: [
@@ -69,7 +70,7 @@ export const PROJECTS = [
     positioning: "Bringing Jewellery Brands Closer to the Digital World.",
     description:
       "Swarnova is a jewellery-focused brand project designed to establish a premium digital presence and create an engaging online experience for jewellery customers.",
-    primaryImage: "/images/project-swarnova.jpg",
+    primaryImage: "/images/project-swarnova.webp",
     primaryAlt:
       "Fine handcrafted gold necklace and ring presented on warm travertine stone for the Swarnova jewellery brand experience",
     layoutVariant: "gallery-showcase",
@@ -77,6 +78,7 @@ export const PROJECTS = [
     accentColor: "#E5D3C9",
     badgeTone: "#E5D3C9",
     projectUrl: (env.VITE_PROJECT_SWARNOVA_URL || "").trim(),
+    screenshot: (env.VITE_PROJECT_SWARNOVA_SCREENSHOT || "").trim(),
     inquiryIndustry: "Jewellery & Fashion",
     inquiryService: "Custom Software Development",
     technologies: [
@@ -120,14 +122,15 @@ export const PROJECTS = [
       "Transforming Traditional Education Through Intelligent Learning Technology.",
     description:
       "EduX is an educational technology application designed to improve academic management, examination preparation and educational workflows through intelligent technology.",
-    primaryImage: "/images/project-edux.jpg",
+    primaryImage: "/images/project-edux.webp",
     primaryAlt:
       "Contemporary sunlit academic study environment with modern tablet representing the EduX AI educational application",
     layoutVariant: "academic-interface",
-    surfaceColor: "#F5F5F3",
-    accentColor: "#ACC6C1",
-    badgeTone: "#ACC6C1",
+    surfaceColor: "#F5F1FA",
+    accentColor: "#DCD5F5",
+    badgeTone: "#DCD5F5",
     projectUrl: (env.VITE_PROJECT_EDUX_URL || "").trim(),
+    screenshot: (env.VITE_PROJECT_EDUX_SCREENSHOT || "").trim(),
     inquiryIndustry: "Education & EdTech",
     inquiryService: "Generative AI & Agentic AI",
     technologies: [
@@ -173,7 +176,7 @@ export const PROJECTS = [
       "Building Intelligent Digital Experiences for the Healthcare Ecosystem.",
     description:
       "Medixo Healthcare projects focus on applying modern software engineering and artificial intelligence to healthcare-related business requirements.",
-    primaryImage: "/images/project-medixo-health.jpg",
+    primaryImage: "/images/project-medixo-health.webp",
     primaryAlt:
       "Clean modern digital healthcare environment with soft muted mint panels representing Medixo Healthcare Solutions",
     secondaryImage: "/images/hero-healthcare.jpg",
@@ -184,6 +187,7 @@ export const PROJECTS = [
     accentColor: "#ACC6C1",
     badgeTone: "#ACC6C1",
     projectUrl: (env.VITE_PROJECT_HEALTHCARE_URL || "").trim(),
+    screenshot: (env.VITE_PROJECT_HEALTHCARE_SCREENSHOT || "").trim(),
     inquiryIndustry: "Healthcare & Medical",
     inquiryService: "RAG & Enterprise Knowledge Systems",
     technologies: [

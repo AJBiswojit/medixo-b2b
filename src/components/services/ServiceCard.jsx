@@ -1,16 +1,16 @@
 import React from "react";
 import {
-  BrainCircuit,
-  Sparkles,
-  BookOpenCheck,
-  Code2,
-  ScanEye,
-  Workflow,
-  Database,
-  Compass,
-  Plus,
-  Minus,
   ArrowUpRight,
+  BookOpenCheck,
+  BrainCircuit,
+  Code2,
+  Compass,
+  Database,
+  Minus,
+  Plus,
+  ScanEye,
+  Sparkles,
+  Workflow,
 } from "lucide-react";
 
 const ICON_MAP = {
@@ -24,13 +24,41 @@ const ICON_MAP = {
   Compass,
 };
 
+function ServiceMotif({ service }) {
+  const Icon = ICON_MAP[service.icon] || Sparkles;
+  return (
+    <div className="service-motif" aria-hidden="true">
+      <span className="editorial-label">
+        Service <span className="service-number">{service.number}</span>
+      </span>
+      <span className="service-symbol">
+        <Icon size={24} strokeWidth={1.5} />
+      </span>
+      <svg
+        className="service-orbit"
+        viewBox="0 0 212 108"
+        fill="none"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        {service.id === "ai-ml" ? (
+          <path d="M216 66c-43 55-123 47-161 10C23 45 56 15 101 15s94 36 65 68C132 122 68 89 77 51c9-38 81-40 107-5s-12 65-38 53s-22-51 4-60s54 9 54 28" />
+        ) : service.id === "gen-agentic-ai" ? (
+          <path d="M218 25C173 0 162 103 116 92S97 8 49 19 7 91-8 86M218 44c-48-26-54 69-100 60S98 28 50 37 10 108-9 101M215 8C170-14 162 84 113 73S94-10 47 1 7 73-8 69" />
+        ) : (
+          <path d="M171-16a67 67 0 1 0 0 134 67 67 0 0 0 0-134Zm0 15a52 52 0 1 0 0 104 52 52 0 0 0 0-104Zm0 15a37 37 0 1 0 0 74 37 37 0 0 0 0-74ZM144 51h54m-27-27v54" />
+        )}
+      </svg>
+    </div>
+  );
+}
+
 export default function ServiceCard({
   service,
+  signature,
   isExpanded,
   onToggle,
   onInquire,
 }) {
-  const IconComponent = ICON_MAP[service.icon] || Sparkles;
   const panelId = `service-panel-${service.id}`;
   const triggerId = `service-trigger-${service.id}`;
 
@@ -38,125 +66,67 @@ export default function ServiceCard({
     <article
       id={`service-${service.id}`}
       data-service-card
-      className={[
-        "group min-w-0 rounded-[22px] border transition-[border-color,box-shadow] duration-300 bg-white flex flex-col",
-        isExpanded
-          ? "border-[#202020]/30 shadow-editorial"
-          : "border-[#EAEAEA] hover:border-[#CFCFCB] hover:shadow-editorial-sm",
-      ].join(" ")}
+      data-expanded={isExpanded}
+      style={{ "--service-accent": service.accent }}
+      className={`service-card${signature ? " service-card--signature" : ""}`}
     >
-      {/* Card Header & Interactive Expand Trigger */}
-      <button
-        id={triggerId}
-        type="button"
-        aria-expanded={isExpanded}
-        aria-controls={panelId}
-        onClick={() => onToggle(service.id)}
-        className="w-full text-left p-6 sm:p-7 flex flex-col gap-5 cursor-pointer"
-      >
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <span
-              className="w-11 h-11 rounded-[14px] flex items-center justify-center border border-[#EAEAEA]/80 transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-2"
-              style={{ backgroundColor: service.accent }}
-              aria-hidden="true"
+      <div className="service-header">
+        <ServiceMotif service={service} />
+        <div className="service-copy">
+          <h3 className="font-display">
+            <button
+              id={triggerId}
+              type="button"
+              className="service-trigger"
+              aria-expanded={isExpanded}
+              aria-controls={panelId}
+              onClick={() => onToggle(service.id)}
             >
-              <IconComponent className="w-5 h-5 text-[#202020]" strokeWidth={1.7} />
-            </span>
-            <span className="text-[11.5px] font-semibold tracking-[0.16em] uppercase text-[#777777]">
-              Service {service.number}
-            </span>
-          </div>
-
-          <span
-            className={[
-              "w-9 h-9 rounded-full border flex items-center justify-center shrink-0 transition-all duration-300",
-              isExpanded
-                ? "bg-[#171717] text-white border-[#171717]"
-                : "bg-[#F5F5F3] text-[#202020] border-[#EAEAEA] group-hover:border-[#202020]",
-            ].join(" ")}
-            aria-hidden="true"
-          >
-            {isExpanded ? (
-              <Minus className="w-4 h-4" />
-            ) : (
-              <Plus className="w-4 h-4" />
-            )}
-          </span>
-        </div>
-
-        <div>
-          <h3 className="font-display text-[1.45rem] sm:text-[1.6rem] leading-[1.2] text-[#202020]">
-            {service.title}
+              <span>{service.title}</span>
+              <span className="service-toggle" aria-hidden="true">
+                {isExpanded ? <Minus size={16} /> : <Plus size={16} />}
+              </span>
+            </button>
           </h3>
-          <p className="mt-2.5 text-[14.5px] leading-[1.68] text-[#777777]">
-            {service.shortSummary}
-          </p>
+          <p>{service.shortSummary}</p>
+          {!isExpanded && (
+            <div className="service-preview">
+              {service.capabilities.slice(0, 3).map((capability) => (
+                <span key={capability} className="service-tag">
+                  {capability}
+                </span>
+              ))}
+              {service.capabilities.length > 3 && (
+                <span className="text-[12px] text-[var(--text-secondary)]">
+                  +{service.capabilities.length - 3} more capabilities
+                </span>
+              )}
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* Compact Preview Pills When Collapsed */}
-        {!isExpanded && (
-          <div className="flex flex-wrap items-center gap-2 pt-1">
-            {service.capabilities.slice(0, 3).map((cap) => (
-              <span
-                key={cap}
-                className="text-[12px] px-3 py-1 rounded-full bg-[#F5F5F3] text-[#4A4A4A] border border-[#EAEAEA]"
-              >
-                {cap}
-              </span>
-            ))}
-            {service.capabilities.length > 3 && (
-              <span className="text-[12px] font-medium text-[#777777] pl-1">
-                +{service.capabilities.length - 3} more capabilities
-              </span>
-            )}
-          </div>
-        )}
-      </button>
-
-      {/* Expandable Full Capabilities List */}
       <div
         id={panelId}
-        role="region"
         aria-labelledby={triggerId}
-        data-open={isExpanded ? "true" : "false"}
+        data-open={isExpanded}
+        inert={!isExpanded}
         className="accordion-content"
       >
         <div className="accordion-inner">
-          <div className="px-6 sm:px-7 pb-6 sm:pb-7 pt-1 border-t border-[#EAEAEA]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#777777] mt-4 mb-3.5">
+          <div className="service-detail">
+            <p className="editorial-label mb-3">
               Included Capabilities ({service.capabilities.length})
             </p>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2.5">
+            <ul>
               {service.capabilities.map((item) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-2.5 text-[13.5px] text-[#202020] leading-snug"
-                >
-                  <span
-                    className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
-                    style={{
-                      backgroundColor:
-                        service.accent === "#F5F5F3" ? "#202020" : service.accent,
-                    }}
-                    aria-hidden="true"
-                  />
-                  <span>{item}</span>
-                </li>
+                <li key={item}>{item}</li>
               ))}
             </ul>
-
-            <div className="mt-6 pt-4 border-t border-[#F0F0EE] flex items-center justify-between gap-4">
-              <span className="text-[12.5px] text-[#777777]">
-                Customized around your project scope
-              </span>
-              <button
-                type="button"
-                onClick={() => onInquire(service.title)}
-                className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#202020] hover:text-[#555555] transition-colors cursor-pointer"
-              >
-                <span>Discuss Service</span>
-                <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+            <div className="service-inquiry">
+              <span>Customized around your project scope</span>
+              <button type="button" onClick={() => onInquire(service.title)}>
+                Discuss Service <ArrowUpRight size={15} aria-hidden="true" />
               </button>
             </div>
           </div>

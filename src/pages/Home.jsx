@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import HeroSection from "../components/hero/HeroSection";
@@ -16,22 +17,42 @@ import { refreshScrollTriggers } from "../animations/scrollAnimations";
 
 export default function Home() {
   const [inquiryPrefill, setInquiryPrefill] = useState(null);
-  const [highlightedServiceId, setHighlightedServiceId] = useState(null);
+  const [highlightedService, setHighlightedService] = useState(null);
 
-  // Refresh ScrollTrigger calculations cleanly after fonts and images settle
+  const { hash, key } = useLocation();
+  const mainRef = useRef(null);
+  const previousLocation = useRef({ hash, key });
+  const inquiryFrame = useRef(0);
+  useEffect(() => () => cancelAnimationFrame(inquiryFrame.current), []);
+
+  // Hash links support direct arrival and normal browser history navigation.
   useEffect(() => {
-    const handleLoad = () => {
-      refreshScrollTriggers();
+    const previous = previousLocation.current;
+    previousLocation.current = { hash, key };
+    if (!hash && previous.key === key && previous.hash === hash) return;
+    const frame = requestAnimationFrame(() => scrollToSection(hash || "home"));
+    return () => cancelAnimationFrame(frame);
+  }, [hash, key]);
+
+  // Accordions, tabs, and inquiry feedback can move later scroll chapters.
+  useEffect(() => {
+    let active = true;
+    let timer;
+    const queueRefresh = () => {
+      if (!active) return;
+      clearTimeout(timer);
+      timer = setTimeout(refreshScrollTriggers, 90);
     };
-
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => {
-        refreshScrollTriggers();
-      });
-    }
-
-    window.addEventListener("load", handleLoad);
-    return () => window.removeEventListener("load", handleLoad);
+    const observer = new ResizeObserver(queueRefresh);
+    observer.observe(mainRef.current);
+    document.fonts?.ready.then(queueRefresh);
+    window.addEventListener("load", queueRefresh);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+      observer.disconnect();
+      window.removeEventListener("load", queueRefresh);
+    };
   }, []);
 
   const handleInitiateInquiry = useCallback((prefillData = {}) => {
@@ -39,11 +60,15 @@ export default function Home() {
       ...prefillData,
       timestamp: Date.now(),
     });
-    scrollToSection("contact");
+    cancelAnimationFrame(inquiryFrame.current);
+    inquiryFrame.current = requestAnimationFrame(() => {
+      document.getElementById("contact")?.focus({ preventScroll: true });
+      scrollToSection("contact");
+    });
   }, []);
 
   const handleSelectServiceFromFooter = useCallback((serviceId) => {
-    setHighlightedServiceId(serviceId);
+    setHighlightedService({ id: serviceId });
   }, []);
 
   return (
@@ -58,11 +83,11 @@ export default function Home() {
 
       <Navbar onDiscussProject={handleInitiateInquiry} />
 
-      <main id="main-content" className="flex-1">
+      <main id="main-content" tabIndex={-1} ref={mainRef} className="flex-1">
         <HeroSection onDiscussProject={handleInitiateInquiry} />
         <AboutSection />
         <ServicesSection
-          highlightedServiceId={highlightedServiceId}
+          highlightedService={highlightedService}
           onInquireService={handleInitiateInquiry}
         />
         <IndustriesSection onInquireIndustry={handleInitiateInquiry} />

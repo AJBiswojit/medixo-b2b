@@ -1,67 +1,129 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import {
   PRIMARY_INDUSTRIES,
   ADDITIONAL_INDUSTRIES,
 } from "../../data/industries";
 import { useGsap } from "../../hooks/useGsap";
-import { revealStagger } from "../../animations/scrollAnimations";
+import { gsap, prefersReducedMotion } from "../../animations/animationConfig";
+import {
+  revealStagger,
+  revealCardGroups,
+  revealImageMask,
+} from "../../animations/scrollAnimations";
 import SectionHeading from "../common/SectionHeading";
 import IndustryCard from "./IndustryCard";
+import "../../styles/industries.css";
+
+gsap.registerPlugin(ScrollToPlugin);
+
+const LAST_SLIDE = PRIMARY_INDUSTRIES.length - 1;
+const SECTOR_ACCENTS = [
+  "var(--pastel-beige)",
+  "var(--pastel-mint)",
+  "var(--pastel-butter)",
+  "var(--pastel-powder)",
+];
 
 export default function IndustriesSection({ onInquireIndustry }) {
   const trackRef = useRef(null);
-  const [activeId, setActiveId] = useState(PRIMARY_INDUSTRIES[0].id);
+  const tabsRef = useRef(null);
+  const motionRef = useRef(null);
+  const frameRef = useRef(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const sectionRef = useGsap((scope) => {
-    revealStagger("[data-reveal]", scope, { stagger: 0.08 });
-    revealStagger("[data-industry-card]", scope, {
-      trigger: scope.querySelector("[data-industries-track]"),
-      stagger: 0.09,
-      y: 30,
-    });
-    revealStagger("[data-extra-industry]", scope, {
-      trigger: scope.querySelector("[data-extra-industries]"),
-      stagger: 0.08,
-      y: 22,
-    });
+    revealStagger("[data-reveal]", scope);
+    revealImageMask("[data-industry-image]", scope);
+    revealCardGroups("[data-extra-industry]", scope, { size: 2, y: 12 });
+  });
+
+  const stopMotion = () => {
+    if (!motionRef.current) return;
+    motionRef.current.kill();
+    motionRef.current = null;
+    trackRef.current?.style.removeProperty("scroll-snap-type");
+  };
+
+  useEffect(() => {
+    const motionPreference = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    const reduce = ({ matches }) => {
+      if (!matches || !motionRef.current) return;
+      const destination = motionRef.current.vars.scrollTo.x;
+      stopMotion();
+      if (trackRef.current) trackRef.current.scrollLeft = destination;
+    };
+    motionPreference.addEventListener("change", reduce);
+    return () => {
+      motionPreference.removeEventListener("change", reduce);
+      cancelAnimationFrame(frameRef.current);
+      stopMotion();
+    };
   }, []);
 
-  const scrollByCard = (direction) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const cardWidth = window.innerWidth < 640 ? window.innerWidth * 0.85 : 446;
-    track.scrollBy({
-      left: direction * cardWidth,
-      behavior: "smooth",
+  // Keep the selected chip in view without moving the page or its focus.
+  useEffect(() => {
+    const tabs = tabsRef.current;
+    const button = tabs?.children[activeIndex];
+    if (!button) return;
+    if (
+      button.offsetLeft < tabs.scrollLeft ||
+      button.offsetLeft + button.offsetWidth >
+        tabs.scrollLeft + tabs.clientWidth
+    ) {
+      tabs.scrollLeft =
+        button.offsetLeft - (tabs.clientWidth - button.offsetWidth) / 2;
+    }
+  }, [activeIndex]);
+
+  const readScroll = () => {
+    cancelAnimationFrame(frameRef.current);
+    frameRef.current = requestAnimationFrame(() => {
+      const track = trackRef.current;
+      if (!track || motionRef.current) return;
+      const max = track.scrollWidth - track.clientWidth;
+      const distance = (card) =>
+        Math.abs(Math.min(max, card.offsetLeft) - track.scrollLeft);
+      const cards = [...track.children];
+      const index = cards.reduce(
+        (best, card, i) => (distance(card) < distance(cards[best]) ? i : best),
+        0,
+      );
+      setActiveIndex(index);
     });
-
-    const currentIndex = PRIMARY_INDUSTRIES.findIndex((i) => i.id === activeId);
-    const nextIndex = Math.max(
-      0,
-      Math.min(PRIMARY_INDUSTRIES.length - 1, currentIndex + direction)
-    );
-    setActiveId(PRIMARY_INDUSTRIES[nextIndex].id);
   };
 
-  const jumpToIndustry = (industry, index) => {
-    setActiveId(industry.id);
+  const select = (index) => {
     const track = trackRef.current;
-    if (!track) return;
-    const cards = track.querySelectorAll("[data-industry-card]");
-    const targetCard = cards[index];
-    if (targetCard) {
-      track.scrollTo({
-        left: targetCard.offsetLeft - track.offsetLeft,
-        behavior: "smooth",
-      });
-    }
-  };
+    const next = Math.min(LAST_SLIDE, Math.max(0, index));
+    const card = track?.children[next];
+    if (!card) return;
 
-  const handleInquire = (industryName) => {
-    if (onInquireIndustry) {
-      onInquireIndustry({ industry: industryName });
+    stopMotion();
+    const left = Math.min(
+      card.offsetLeft,
+      track.scrollWidth - track.clientWidth,
+    );
+    setActiveIndex(next);
+    if (prefersReducedMotion() || Math.abs(track.scrollLeft - left) < 2) {
+      track.scrollLeft = left;
+      return;
     }
+
+    const finish = () => {
+      motionRef.current = null;
+      track.style.removeProperty("scroll-snap-type");
+      readScroll();
+    };
+    motionRef.current = gsap.to(track, {
+      scrollTo: { x: left, autoKill: true, onAutoKill: finish },
+      duration: 0.68,
+      ease: "power3.inOut",
+      onComplete: finish,
+    });
   };
 
   return (
@@ -69,137 +131,129 @@ export default function IndustriesSection({ onInquireIndustry }) {
       id="industries"
       ref={sectionRef}
       aria-labelledby="industries-heading"
-      className="bg-white py-20 sm:py-28 lg:py-32 border-b border-[#EAEAEA] overflow-hidden"
+      className="section-shell industries-section"
     >
       <div className="editorial-container">
-        {/* Heading + Horizontal Gallery Controls */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div id="industries-heading">
-            <SectionHeading
-              eyebrow="Industries We Serve"
-              title="Technology Solutions Across Multiple Industries."
-              subtitle="Domain-aware AI systems and custom software applications built around the distinct operational needs of healthcare, education, commerce, luxury retail, human resources, and industrial sectors."
-              accentColor="#F6EAEA"
-            />
-          </div>
-
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+          <SectionHeading
+            id="industries-heading"
+            index="03"
+            eyebrow="Industries We Serve"
+            title="Technology Solutions Across Multiple Industries."
+            subtitle="Domain-aware AI systems and custom software applications built around the distinct operational needs of healthcare, education, commerce, luxury retail, human resources, and industrial sectors."
+          />
           <div
+            className="industry-controls"
             data-reveal
-            className="flex items-center gap-2.5 shrink-0"
+            role="group"
             aria-label="Slide through industries"
           >
+            <span aria-hidden="true" className="editorial-label">
+              {PRIMARY_INDUSTRIES[activeIndex].number} / 0
+              {PRIMARY_INDUSTRIES.length}
+            </span>
             <button
               type="button"
-              onClick={() => scrollByCard(-1)}
+              className="icon-button"
+              disabled={activeIndex === 0}
+              onClick={() => select(activeIndex - 1)}
               aria-label="Previous industry"
-              className="w-11 h-11 rounded-full border border-[#DFDFDC] bg-white text-[#202020] hover:border-[#202020] hover:bg-[#F5F5F3] flex items-center justify-center transition-colors cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+              <ArrowLeft size={16} aria-hidden="true" />
             </button>
             <button
               type="button"
-              onClick={() => scrollByCard(1)}
+              className="icon-button icon-button--dark"
+              disabled={activeIndex === LAST_SLIDE}
+              onClick={() => select(activeIndex + 1)}
               aria-label="Next industry"
-              className="w-11 h-11 rounded-full border border-[#171717] bg-[#171717] text-white hover:bg-[#2E2E2E] flex items-center justify-center transition-colors cursor-pointer"
             >
-              <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              <ArrowRight size={16} aria-hidden="true" />
             </button>
           </div>
         </div>
 
-        {/* Interactive Industry Index Tabs */}
         <div
           data-reveal
-          className="mt-8 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"
+          ref={tabsRef}
+          className="industry-index no-scrollbar"
+          aria-label="Industry index"
+          role="group"
         >
-          {PRIMARY_INDUSTRIES.map((industry, index) => {
-            const isSelected = activeId === industry.id;
-            return (
-              <button
-                key={industry.id}
-                type="button"
-                onClick={() => jumpToIndustry(industry, index)}
-                className={[
-                  "shrink-0 px-4 py-2 rounded-full text-[12.5px] font-medium border transition-all duration-200 cursor-pointer",
-                  isSelected
-                    ? "bg-[#F5F5F3] border-[#202020] text-[#202020]"
-                    : "bg-white border-[#EAEAEA] text-[#777777] hover:text-[#202020] hover:border-[#CFCFCB]",
-                ].join(" ")}
-              >
-                <span className="mr-1.5 text-[11px] opacity-70">
-                  {industry.number}.
-                </span>
-                {industry.title}
-              </button>
-            );
-          })}
+          {PRIMARY_INDUSTRIES.map((industry, index) => (
+            <button
+              key={industry.id}
+              type="button"
+              onClick={() => select(index)}
+              aria-pressed={index === activeIndex}
+              aria-controls="industry-gallery"
+              style={{ "--industry-accent": industry.accent }}
+            >
+              <span aria-hidden="true">{industry.number}</span> {industry.title}
+            </button>
+          ))}
         </div>
 
-        {/* Horizontal Image-Led Industry Showcase Track */}
         <div
+          id="industry-gallery"
           ref={trackRef}
-          data-industries-track
-          className="mt-8 flex gap-5 sm:gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4"
+          role="region"
+          aria-label="Industry gallery"
+          tabIndex={0}
+          onScroll={readScroll}
+          className="industry-track no-scrollbar"
+          onKeyDown={(event) => {
+            if (
+              event.target !== event.currentTarget ||
+              !["ArrowLeft", "ArrowRight"].includes(event.key)
+            )
+              return;
+            event.preventDefault();
+            select(activeIndex + (event.key === "ArrowLeft" ? -1 : 1));
+          }}
         >
-          {PRIMARY_INDUSTRIES.map((industry) => (
+          {PRIMARY_INDUSTRIES.map((industry, index) => (
             <IndustryCard
               key={industry.id}
               industry={industry}
-              isActive={activeId === industry.id}
-              onSelect={setActiveId}
-              onInquire={handleInquire}
+              isActive={index === activeIndex}
+              onSelect={() => select(index)}
+              onInquire={() =>
+                onInquireIndustry?.({ industry: industry.title })
+              }
             />
           ))}
         </div>
 
-        {/* Additional Served Industries Band */}
-        <div
-          data-extra-industries
-          className="mt-14 pt-12 border-t border-[#EAEAEA]"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-8">
-            <h3 className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#777777]">
-              Additional Sectors Supported
-            </h3>
-            <span className="text-[13px] text-[#777777]">
+        <div className="additional-sectors">
+          <div className="flex flex-wrap justify-between gap-2 mb-5">
+            <h3 className="editorial-label">Additional Sectors Supported</h3>
+            <span className="text-[13px] text-[var(--text-secondary)]">
               Tailored architecture for specialized enterprise domains
             </span>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {ADDITIONAL_INDUSTRIES.map((sector, idx) => {
-              const accents = ["#E5D3C9", "#ACC6C1", "#F6EAEA", "#E8E8E8"];
-              return (
-                <button
-                  key={sector.id}
-                  type="button"
-                  data-extra-industry
-                  onClick={() => handleInquire(sector.title)}
-                  className="group text-left p-6 rounded-[20px] bg-[#F5F5F3] border border-[#EAEAEA] hover:bg-white hover:border-[#202020]/30 hover:shadow-editorial-sm transition-all duration-300 flex flex-col justify-between gap-4 cursor-pointer"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-3.5">
-                      <span
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: accents[idx % accents.length] }}
-                        aria-hidden="true"
-                      />
-                      <ArrowUpRight
-                        className="w-4 h-4 text-[#777777] group-hover:text-[#202020] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <h4 className="font-display text-[1.3rem] text-[#202020] leading-snug">
-                      {sector.title}
-                    </h4>
-                    <p className="mt-2 text-[13.5px] leading-[1.62] text-[#777777]">
-                      {sector.detail}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          <ul>
+            {ADDITIONAL_INDUSTRIES.map((sector, index) => (
+              <li
+                key={sector.id}
+                data-extra-industry
+                style={{ "--sector-accent": SECTOR_ACCENTS[index] }}
+              >
+                <h4 className="font-display">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onInquireIndustry?.({ industry: sector.title })
+                    }
+                  >
+                    <span>{sector.title}</span>
+                    <ArrowUpRight size={16} aria-hidden="true" />
+                  </button>
+                </h4>
+                <p>{sector.detail}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

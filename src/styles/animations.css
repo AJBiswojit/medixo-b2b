@@ -1,24 +1,5 @@
 /* GPU-friendly animation helpers & reduced-motion support */
 
-.hero-float-card {
-  will-change: transform, opacity;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-}
-
-.hero-word-mask {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: bottom;
-  padding-bottom: 0.08em;
-  margin-bottom: -0.08em;
-}
-
-.hero-word-inner {
-  display: inline-block;
-  will-change: transform, opacity;
-}
-
 .editorial-image-frame {
   overflow: hidden;
   position: relative;
