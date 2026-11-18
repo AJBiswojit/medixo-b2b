@@ -289,9 +289,9 @@ export const INDUSTRIES = [
     title: "Telecommunications",
     summary:
       "Data and software systems for service operations, network reporting, and automated support workflows.",
-    image: "/images/industry-optical-1000.webp",
-    smallImage: "/images/industry-optical-520.webp",
-    alt: "Sculptural optical lenses arranged in soft daylight, an illustration for communications technology",
+    ...study("telecommunications"),
+    imagePosition: "center 44%",
+    alt: "Miniature cellular tower with panel antennas and a small dish, mounted on a powder-blue base",
     accent: "#D8E9F7",
     solutions: [
       "Service Operations Portals",
@@ -306,9 +306,9 @@ export const INDUSTRIES = [
     title: "Media & Entertainment",
     summary:
       "Tools for organizing creative assets, coordinating production work, and helping audiences discover relevant content.",
-    image: "/images/hero-creative.webp",
-    imagePosition: "center 48%",
-    alt: "Sculpted translucent coral ribbon used as an editorial illustration for creative production",
+    ...study("media-entertainment"),
+    imagePosition: "center 62%",
+    alt: "Apricot cinema camera beside a cream film reel and a curling amber filmstrip",
     accent: "#F3D5C5",
     solutions: [
       "Media Asset Management",
@@ -323,9 +323,8 @@ export const INDUSTRIES = [
     title: "Professional Services",
     summary:
       "Enterprise RAG knowledge assistants, automated research and reporting, and bespoke client portals.",
-    image: "/images/about-studio.webp",
-    smallImage: "/images/about-studio-520.webp",
-    alt: "Sunlit studio with an oak meeting table and neatly arranged work materials",
+    ...study("professional-services"),
+    alt: "Open sage folio with cream papers, a brass pen, and a sea-glass paperweight",
     accent: "#D6E8E3",
     solutions: [
       "Enterprise Knowledge Assistants",
