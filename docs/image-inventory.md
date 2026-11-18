@@ -76,10 +76,12 @@ Configured, approved screenshots take priority, then bundled captures, then visi
 
   | Viewport | Pin scrub, before → after | Release gap, before → after |
   | --- | --- | --- |
-  | 1100 × 680 | 1108 → 792 px | 0 → 0 px |
-  | 1440 × 900 | 1467 → 897 px | 67 → 0 px |
-  | 1920 × 1080 | 1740 → 1108 px | 68 → 0 px |
-  | 2560 × 1440 | 1740 → 1116 px | 421 → 0 px |
+  | 1100 × 680 | 1108 → 1496 px | 0 → 0 px |
+  | 1440 × 900 | 1467 → 1979 px | 67 → 0 px |
+  | 1920 × 1080 | 1740 → 2200 px | 68 → 0 px |
+  | 2560 × 1440 | 1740 → 2200 px | 421 → 0 px |
   | 390 × 844 | Not pinned | 0 → 0 px |
+
+  The desktop pin now follows the four-scene hero choreography: the scrub distance is the viewport height × 2.2, clamped to 1400–2200 px. Reverse scrubbing was checked to produce identical frames at 30%, 60%, and 90% progress.
 
 - Verified all 18 responsive covers, sector deep links and browser Back, carousel directory/arrows/keyboard/touch, portfolio fallbacks and dialog focus return, inquiry prefills, and the no-endpoint and mocked success/error submission paths. Automated axe checks passed on the desktop and narrow mobile page, tested project dialogs, and the credits page.
