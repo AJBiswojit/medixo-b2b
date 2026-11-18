@@ -193,20 +193,12 @@
   background: rgb(255 255 255 / 52%);
 }
 
-.hero-art {
-  position: absolute;
-  inset: 0;
-}
-.hero-art > img {
+.hero-tile-body img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-.hero-card--ai img {
-  object-position: 50% 45%;
-}
-.hero-card--creative img {
-  object-position: 44% 48%;
+  object-position: var(--tile-crop, center);
 }
 
 .hero-tile-caption {
@@ -223,171 +215,6 @@
 
 .hero-tile-caption svg {
   flex: none;
-}
-
-.hero-mini-header {
-  display: flex;
-  gap: 0.42rem;
-  align-items: center;
-}
-.hero-mini-header strong {
-  display: block;
-  font-size: clamp(9px, 0.86vw, 12px);
-  line-height: 1.16;
-}
-.hero-mini-kicker {
-  display: block;
-  line-height: 1.2;
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  margin-bottom: 0.15rem;
-}
-.hero-mini-icon {
-  display: grid;
-  width: 26px;
-  height: 26px;
-  flex: none;
-  place-items: center;
-  border-radius: 8px;
-  background: #fff9;
-}
-
-.care-mini {
-  color: #244c42;
-  background: linear-gradient(140deg, #f2faf6, #d1e4db);
-  padding: 9px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.hero-ecg {
-  width: 100%;
-  min-height: 14px;
-  max-height: 50%;
-}
-.mini-status {
-  font-size: 7.5px;
-  display: flex;
-  align-items: center;
-  font-weight: 800;
-  line-height: 1;
-}
-.mini-status svg {
-  margin-left: -3px;
-}
-
-.study-mini {
-  display: grid;
-  align-content: center;
-  gap: 6px;
-  padding: 8px;
-  color: #5c481f;
-  background: linear-gradient(132deg, #fffaeb, #faedcd);
-}
-.study-mini-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.35rem;
-  font-size: 7.5px;
-  padding: 2px 6px;
-  border: 1px solid #8a6b2330;
-  background: #fffcf2;
-  border-radius: 4px;
-}
-.study-mini-row i {
-  display: block;
-  width: 35%;
-  height: 3px;
-  border-radius: 5px;
-  background: #dfc48c;
-}
-.study-mini-row:last-child i {
-  width: 26%;
-}
-
-.commerce-mini {
-  display: grid;
-  grid-template-columns: 1.12fr 0.88fr;
-  color: #69394a;
-}
-.commerce-mini img {
-  object-position: 50% 28%;
-}
-.commerce-mini > div {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 0.3rem;
-}
-.commerce-mini .hero-mini-kicker {
-  margin-top: 0.28rem;
-}
-.commerce-mini strong {
-  font: 400 clamp(11px, 1.2vw, 17px)/1.04 var(--font-display);
-}
-.commerce-swatches {
-  margin-top: 0.45rem;
-  display: flex;
-  gap: 3px;
-}
-.commerce-swatches i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #9a525f;
-}
-.commerce-swatches i:nth-child(2) {
-  background: #c18179;
-}
-.commerce-swatches i:nth-child(3) {
-  background: #ddaa9b;
-}
-
-.hero-detection {
-  position: absolute;
-  inset: 17% 11% 14% 23%;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  border: 1px dashed #20435d;
-  color: #203f57;
-}
-.hero-detection span {
-  background: #d8e9f7;
-  font: 800 8px/1.1 var(--font-sans);
-  padding: 2px 3px;
-}
-.hero-detection svg {
-  background: #eef4fa;
-  margin: 3px;
-}
-
-.flow-mini {
-  padding: 9px 7px 4px;
-  color: #405139;
-  text-align: center;
-  display: grid;
-  align-content: center;
-}
-.flow-mini svg {
-  width: 100%;
-  max-height: 45px;
-}
-.analytics-mini {
-  padding: 8px 9px 4px;
-  color: #543d32;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.analytics-mini > svg {
-  width: 100%;
-  max-height: 76%;
-  min-height: 12px;
 }
 
 .hero-margin {
@@ -668,39 +495,9 @@
     --tile-ratio: 1.37;
     --tile-layer: 2;
   }
-  .care-mini {
-    padding: 11px;
-  }
-  .hero-mini-icon {
-    width: 32px;
-    height: 32px;
-  }
-  .study-mini {
-    padding: 9px 11px;
-  }
-  .commerce-mini > div {
-    padding: 0.52rem;
-  }
-  .analytics-mini {
-    padding: 10px 10px 5px;
-  }
 }
 
 @media (min-width: 1100px) and (max-width: 1230px) {
-  .study-mini {
-    gap: 3px;
-    padding: 5px 7px;
-  }
-  .study-mini .hero-mini-icon {
-    width: 23px;
-    height: 23px;
-  }
-  .study-mini-row {
-    padding-block: 1px;
-  }
-  .analytics-mini {
-    padding-top: 6px;
-  }
   .hero-card--enterprise .hero-tile-caption {
     font-size: 9.1px;
   }
@@ -710,15 +507,10 @@
 .hero-card[data-hero-industry] {
   display: none;
 }
-.hero-card[data-hero-industry] img {
-  object-position: var(--industry-art-position, center);
-}
 
-/* The full-height pin is reserved for viewports that can show the artboard. */
+/* Pin only the natural artboard + capability index: forcing a viewport-height
+   wrapper left unused pin space between the index and About on tall screens. */
 @media (min-width: 1100px) and (min-height: 680px) and (prefers-reduced-motion: no-preference) {
-  .hero-scene {
-    min-height: calc(100svh - var(--header-height));
-  }
   .hero-canvas {
     min-height: min(
       max(

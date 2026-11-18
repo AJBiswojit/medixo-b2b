@@ -4,6 +4,12 @@
 .about-section {
   background: white;
 }
+@media (min-width: 1100px) and (min-height: 680px) and (prefers-reduced-motion: no-preference) {
+  .section-shell.about-section {
+    /* Keep the chapter inset without adding another long scroll after the pin. */
+    padding-block-start: clamp(2.5rem, 3.7vw, 4rem);
+  }
+}
 .about-grid,
 .why-grid {
   display: grid;

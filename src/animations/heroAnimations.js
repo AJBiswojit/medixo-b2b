@@ -296,8 +296,10 @@ function createDesktopScene(scope, select) {
       id: "hero-scene",
       trigger: scene,
       start: () => `top top+=${parseFloat(getComputedStyle(scope).paddingTop)}`,
+      // Budget the scrub against the artboard, not an empty viewport-height
+      // box. Its natural height also lets About reach the rail at pin release.
       end: () =>
-        `+=${Math.round(gsap.utils.clamp(1000, 1740, window.innerHeight * 1.63))}`,
+        `+=${Math.round(gsap.utils.clamp(760, 1120, scene.offsetHeight * 1.18))}`,
       scrub: true,
       pin: true,
       pinSpacing: true,

@@ -107,7 +107,12 @@ export default function Footer({ onSelectService }) {
           </nav>
         </div>
         <div className="footer-base">
-          <p>{BRAND.copyright}</p>
+          <p>
+            {BRAND.copyright}{" "}
+            <a className="footer-image-credits" href="/image-credits.html">
+              Image credits
+            </a>
+          </p>
           <button
             type="button"
             onClick={() => scrollToSection("top")}

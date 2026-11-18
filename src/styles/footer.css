@@ -84,6 +84,12 @@
   color: #ceccc4;
   font-size: 0.76rem;
 }
+.footer-image-credits {
+  display: inline-block;
+  margin-inline-start: 0.65rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .footer-base button {
   display: inline-flex;
   align-items: center;

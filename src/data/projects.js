@@ -1,4 +1,14 @@
+import { editorialPhoto } from "./imagery";
+
 const env = import.meta.env || {};
+
+function capture(name, width, height, label, alt) {
+  return {
+    ...editorialPhoto(`screens/${name}`, { width, height, smallWidth: 640 }),
+    label,
+    alt,
+  };
+}
 
 export const PROJECTS = [
   {
@@ -12,12 +22,36 @@ export const PROJECTS = [
       "Digitizing Fashion Commerce with Intelligent E-commerce Solutions.",
     description:
       "Pratikshya Fashion is a customized e-commerce platform designed for the textile and fashion industry. The platform focuses on providing a seamless online shopping experience while simplifying business operations through integrated management functionalities.",
-    primaryImage: "/images/project-pratikshya.webp",
-    primaryAlt:
-      "Curated fashion and artisanal textile showroom representing the Pratikshya Fashion digital commerce platform",
-    secondaryImage: "/images/hero-fashion.webp",
-    secondaryAlt:
-      "Draped organic silk and woven textiles in warm beige and soft blush tones",
+    capture: capture(
+      "pratikshya-product",
+      1200,
+      856,
+      "Storefront · Product detail",
+      "Pratikshya storefront showing the Vermilion drape sample product",
+    ),
+    captureNote:
+      "Screens from the Pratikshya source build. Stock reference photos, prices and catalogue records are local examples, not live inventory.",
+    additionalCaptures: [
+      capture(
+        "pratikshya-catalogue",
+        1200,
+        805,
+        "Storefront · Catalogue and filters",
+        "Category screen showing filters and four sample garments",
+      ),
+      capture(
+        "pratikshya-admin",
+        1200,
+        851,
+        "Admin · Product catalogue",
+        "Local demo admin screen showing catalogue status and controls",
+      ),
+    ],
+    conceptPhoto: editorialPhoto("concept-fashion-atelier", {
+      width: 900,
+      height: 600,
+      smallWidth: 480,
+    }),
     layoutVariant: "atelier-split",
     surfaceColor: "#FAF4F3",
     accentColor: "#F6EAEA",
@@ -70,9 +104,17 @@ export const PROJECTS = [
     positioning: "Bringing Jewellery Brands Closer to the Digital World.",
     description:
       "Swarnova is a jewellery-focused brand project designed to establish a premium digital presence and create an engaging online experience for jewellery customers.",
-    primaryImage: "/images/project-swarnova.webp",
-    primaryAlt:
-      "Fine handcrafted gold necklace and ring presented on warm travertine stone for the Swarnova jewellery brand experience",
+    collectionPhoto: editorialPhoto("concept-jewellery-collection", {
+      width: 560,
+      height: 740,
+      smallWidth: 280,
+    }),
+    detailPhoto: editorialPhoto("concept-jewellery-detail", {
+      width: 480,
+      height: 640,
+      smallWidth: 240,
+    }),
+    conceptLabel: "Collection and product concept · Stock photos",
     layoutVariant: "gallery-showcase",
     surfaceColor: "#F8F3EE",
     accentColor: "#E5D3C9",
@@ -122,9 +164,45 @@ export const PROJECTS = [
       "Transforming Traditional Education Through Intelligent Learning Technology.",
     description:
       "EduX is an educational technology application designed to improve academic management, examination preparation and educational workflows through intelligent technology.",
-    primaryImage: "/images/project-edux.webp",
-    primaryAlt:
-      "Contemporary sunlit academic study environment with modern tablet representing the EduX AI educational application",
+    capture: capture(
+      "edux-paper-studio",
+      1280,
+      825,
+      "Faculty · Question Paper Studio",
+      "EduX faculty portal with the Question Paper Studio form open",
+    ),
+    captureNote:
+      "Screens from the EduX source build on an isolated local database. All accounts and academic data are examples.",
+    additionalCaptures: [
+      capture(
+        "edux-faculty",
+        1280,
+        825,
+        "Faculty · Teaching dashboard",
+        "Teaching Command Center with local demo teaching and assessment summaries",
+      ),
+      capture(
+        "edux-student",
+        1280,
+        825,
+        "Student · Learning dashboard",
+        "Student dashboard with sample academic overview and navigation",
+      ),
+      capture(
+        "edux-exams",
+        1280,
+        795,
+        "Student · Examinations",
+        "Examinations workspace and navigation to practice tools",
+      ),
+      capture(
+        "edux-analytics",
+        1280,
+        825,
+        "Student · Performance & AI",
+        "Performance workspace with demo academic and consistency summaries",
+      ),
+    ],
     layoutVariant: "academic-interface",
     surfaceColor: "#F5F1FA",
     accentColor: "#DCD5F5",
@@ -176,12 +254,12 @@ export const PROJECTS = [
       "Building Intelligent Digital Experiences for the Healthcare Ecosystem.",
     description:
       "Medixo Healthcare projects focus on applying modern software engineering and artificial intelligence to healthcare-related business requirements.",
-    primaryImage: "/images/project-medixo-health.webp",
-    primaryAlt:
-      "Clean modern digital healthcare environment with soft muted mint panels representing Medixo Healthcare Solutions",
-    secondaryImage: "/images/hero-healthcare.jpg",
-    secondaryAlt:
-      "Minimalist precision medical glassware symbolizing intelligent healthcare document and knowledge retrieval",
+    referencePhoto: editorialPhoto("concept-clinical-reference", {
+      width: 500,
+      height: 600,
+      smallWidth: 250,
+    }),
+    conceptLabel: "Knowledge library and assistant concept",
     layoutVariant: "clinical-system",
     surfaceColor: "#F2F7F6",
     accentColor: "#ACC6C1",

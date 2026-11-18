@@ -1,3 +1,5 @@
+import { editorialPhoto } from "./imagery";
+
 export const BRAND = {
   name: "MEDIXO AI",
   tagline: "Building Intelligent Solutions. Engineering the Future.",
@@ -14,6 +16,14 @@ export const NAV_ITEMS = [
   { id: "contact", label: "Contact", href: "#contact" },
 ];
 
+const heroPhoto = (name, position) =>
+  editorialPhoto(`hero-${name}`, {
+    width: 480,
+    height: 320,
+    smallWidth: 260,
+    position,
+  });
+
 // Source order is also the reading order of the stacked editorial gallery.
 export const HERO_CARDS = [
   {
@@ -21,9 +31,7 @@ export const HERO_CARDS = [
     title: "Artificial Intelligence",
     target: "services",
     tone: "lavender",
-    image: "/images/hero-lavender.webp",
-    width: 490,
-    height: 480,
+    ...heroPhoto("ai-infrastructure", "center 48%"),
     compact: true,
     tilt: -8,
   },
@@ -32,6 +40,7 @@ export const HERO_CARDS = [
     title: "Healthcare",
     target: "industries",
     tone: "mint",
+    ...heroPhoto("clinical-monitoring", "57% center"),
     compact: true,
     tilt: 8,
   },
@@ -40,6 +49,7 @@ export const HERO_CARDS = [
     title: "Education",
     target: "industries",
     tone: "butter",
+    ...heroPhoto("digital-learning", "40% 52%"),
     tablet: true,
     tilt: -7,
   },
@@ -48,6 +58,7 @@ export const HERO_CARDS = [
     title: "E-commerce",
     target: "our-work",
     tone: "blush",
+    ...heroPhoto("fashion-retail", "center 52%"),
     compact: true,
     tilt: 7,
   },
@@ -56,9 +67,8 @@ export const HERO_CARDS = [
     title: "Computer Vision",
     target: "services",
     tone: "powder",
-    image: "/images/hero-optics.webp",
-    width: 420,
-    height: 235,
+    ...heroPhoto("vision-camera", "48% 58%"),
+    imageCredit: "Digital inspection photograph by Keyence DE (CC BY-SA 4.0)",
     tablet: true,
     tilt: 6,
   },
@@ -67,9 +77,7 @@ export const HERO_CARDS = [
     title: "Generative AI",
     target: "services",
     tone: "peach",
-    image: "/images/hero-creative.webp",
-    width: 400,
-    height: 370,
+    ...heroPhoto("creative-workstation", "47% center"),
     tilt: 10,
   },
   {
@@ -77,6 +85,7 @@ export const HERO_CARDS = [
     title: "Automation",
     target: "services",
     tone: "sage",
+    ...heroPhoto("robotic-cell", "44% 55%"),
     tilt: 9,
   },
   {
@@ -84,6 +93,8 @@ export const HERO_CARDS = [
     title: "Enterprise Software",
     target: "technologies",
     tone: "beige",
+    ...heroPhoto("analytics-dashboard", "center 50%"),
+    imageCredit: "Apache Superset sample analytics dashboard",
     compact: true,
     tilt: -8,
   },
