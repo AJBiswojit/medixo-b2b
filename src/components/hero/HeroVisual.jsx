@@ -8,8 +8,17 @@ import {
   ScanLine,
   ShoppingBag,
 } from "lucide-react";
-import { HERO_FLOATING_CARDS } from "../../data/navigation";
+import { Link } from "react-router-dom";
+import { HERO_CARDS } from "../../data/navigation";
+import { INDUSTRIES, industryAnchor } from "../../data/industries";
 import { scrollToSection } from "../../utils/validation";
+
+const INDUSTRIES_BY_SLOT = new Map(
+  INDUSTRIES.filter(({ hero }) => hero).map((industry) => [
+    industry.hero.slot,
+    industry,
+  ]),
+);
 
 function TileArt({ card }) {
   if (card.image) {
@@ -196,6 +205,80 @@ function TileArt({ card }) {
   );
 }
 
+function FloatingCard({ card, industry }) {
+  const anchor = industry ? industryAnchor(industry.id) : card.target;
+  const label = industry ? industry.hero.label : card.title;
+  const tile = (
+    <>
+      <div className="hero-tile-body" aria-hidden="true">
+        {industry ? (
+          <div className="hero-art">
+            <img
+              src={industry.smallImage || industry.image}
+              alt=""
+              width="520"
+              height="347"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        ) : (
+          <TileArt card={card} />
+        )}
+      </div>
+      <div className="hero-tile-caption">
+        <span>{label}</span>
+        <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
+      </div>
+    </>
+  );
+
+  return (
+    <div
+      className={`hero-card hero-card--${card.id}`}
+      data-compact={!industry && card.compact ? "true" : undefined}
+      data-tablet={!industry && card.tablet ? "true" : undefined}
+      data-hero-card={industry ? anchor : card.id}
+      data-hero-industry={industry ? card.id : undefined}
+      style={{
+        "--tile-color": industry
+          ? industry.accent
+          : `var(--pastel-${card.tone})`,
+        "--tile-tilt": `${card.tilt}deg`,
+        "--industry-art-position": industry?.imagePosition,
+      }}
+    >
+      {industry ? (
+        <Link
+          to={`#${anchor}`}
+          className="hero-tile"
+          aria-label={industry.title}
+        >
+          {tile}
+        </Link>
+      ) : (
+        <a
+          className="hero-tile"
+          href={`#${anchor}`}
+          onClick={(event) => {
+            if (
+              event.metaKey ||
+              event.ctrlKey ||
+              event.shiftKey ||
+              event.altKey
+            )
+              return;
+            event.preventDefault();
+            scrollToSection(anchor);
+          }}
+        >
+          {tile}
+        </a>
+      )}
+    </div>
+  );
+}
+
 export default function HeroVisual() {
   return (
     <div
@@ -216,48 +299,21 @@ export default function HeroVisual() {
           className="hero-traces-marks"
         />
       </svg>
-      {HERO_FLOATING_CARDS.map((card) => (
-        <div
-          key={card.id}
-          className={`hero-card hero-card--${card.id}`}
-          data-compact={card.compact ? "true" : undefined}
-          data-tablet={card.tablet ? "true" : undefined}
-          data-hero-entry
-          data-from-x={card.from[0]}
-          data-from-y={card.from[1]}
-          data-depth={card.depth}
-          style={{
-            "--tile-color": `var(--pastel-${card.tone})`,
-            "--tile-tilt": `${card.tilt}deg`,
-          }}
-        >
-          <div data-hero-drift>
-            <a
-              className="hero-tile"
-              href={`#${card.target}`}
-              onClick={(event) => {
-                if (
-                  event.metaKey ||
-                  event.ctrlKey ||
-                  event.shiftKey ||
-                  event.altKey
-                )
-                  return;
-                event.preventDefault();
-                scrollToSection(card.target);
-              }}
-            >
-              <div className="hero-tile-body" aria-hidden="true">
-                <TileArt card={card} />
-              </div>
-              <div className="hero-tile-caption">
-                <span>{card.title}</span>
-                <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
-              </div>
-            </a>
-          </div>
-        </div>
+      {HERO_CARDS.map((card) => (
+        <FloatingCard key={card.id} card={card} />
       ))}
+      {HERO_CARDS.map((card) => {
+        const industry = INDUSTRIES_BY_SLOT.get(card.id);
+        return (
+          industry && (
+            <FloatingCard
+              key={industryAnchor(industry.id)}
+              card={card}
+              industry={industry}
+            />
+          )
+        );
+      })}
     </div>
   );
 }

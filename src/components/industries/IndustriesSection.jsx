@@ -1,15 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import {
-  PRIMARY_INDUSTRIES,
-  ADDITIONAL_INDUSTRIES,
+  INDUSTRIES,
+  INDUSTRY_GROUPS,
+  industryAnchor,
 } from "../../data/industries";
 import { useGsap } from "../../hooks/useGsap";
 import { gsap, prefersReducedMotion } from "../../animations/animationConfig";
 import {
   revealStagger,
-  revealCardGroups,
   revealImageMask,
 } from "../../animations/scrollAnimations";
 import SectionHeading from "../common/SectionHeading";
@@ -18,33 +19,39 @@ import "../../styles/industries.css";
 
 gsap.registerPlugin(ScrollToPlugin);
 
-const LAST_SLIDE = PRIMARY_INDUSTRIES.length - 1;
-const SECTOR_ACCENTS = [
-  "var(--pastel-beige)",
-  "var(--pastel-mint)",
-  "var(--pastel-butter)",
-  "var(--pastel-powder)",
+const GALLERY_INDUSTRIES = [
+  ...INDUSTRIES.filter(({ spotlight }) => spotlight),
+  ...INDUSTRIES.filter(({ spotlight }) => !spotlight),
 ];
+const LAST_SLIDE = GALLERY_INDUSTRIES.length - 1;
+const formatNumber = (number) => String(number).padStart(2, "0");
+const slideLeft = (track, card) =>
+  Math.min(card.offsetLeft, track.scrollWidth - track.clientWidth);
+const DIRECTORY_GROUPS = INDUSTRY_GROUPS.map((group) => ({
+  ...group,
+  entries: INDUSTRIES.filter((industry) => industry.group === group.id),
+})).filter((group) => group.entries.length);
 
 export default function IndustriesSection({ onInquireIndustry }) {
+  const { hash, key } = useLocation();
   const trackRef = useRef(null);
-  const tabsRef = useRef(null);
   const motionRef = useRef(null);
   const frameRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndustry = GALLERY_INDUSTRIES[activeIndex];
 
   const sectionRef = useGsap((scope) => {
     revealStagger("[data-reveal]", scope);
-    revealImageMask("[data-industry-image]", scope);
-    revealCardGroups("[data-extra-industry]", scope, { size: 2, y: 12 });
+    // Later images load as the visitor browses, not as 18 simultaneous reveals.
+    revealImageMask("[data-industry-image='lead']", scope);
   });
 
-  const stopMotion = () => {
+  const stopMotion = useCallback(() => {
     if (!motionRef.current) return;
     motionRef.current.kill();
     motionRef.current = null;
     trackRef.current?.style.removeProperty("scroll-snap-type");
-  };
+  }, []);
 
   useEffect(() => {
     const motionPreference = window.matchMedia(
@@ -60,71 +67,75 @@ export default function IndustriesSection({ onInquireIndustry }) {
     return () => {
       motionPreference.removeEventListener("change", reduce);
       cancelAnimationFrame(frameRef.current);
+      frameRef.current = 0;
       stopMotion();
     };
-  }, []);
+  }, [stopMotion]);
 
-  // Keep the selected chip in view without moving the page or its focus.
-  useEffect(() => {
-    const tabs = tabsRef.current;
-    const button = tabs?.children[activeIndex];
-    if (!button) return;
-    if (
-      button.offsetLeft < tabs.scrollLeft ||
-      button.offsetLeft + button.offsetWidth >
-        tabs.scrollLeft + tabs.clientWidth
-    ) {
-      tabs.scrollLeft =
-        button.offsetLeft - (tabs.clientWidth - button.offsetWidth) / 2;
-    }
-  }, [activeIndex]);
-
-  const readScroll = () => {
-    cancelAnimationFrame(frameRef.current);
+  const readScroll = useCallback(() => {
+    if (frameRef.current) return;
     frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = 0;
       const track = trackRef.current;
       if (!track || motionRef.current) return;
-      const max = track.scrollWidth - track.clientWidth;
-      const distance = (card) =>
-        Math.abs(Math.min(max, card.offsetLeft) - track.scrollLeft);
+      const left = track.scrollLeft;
       const cards = [...track.children];
-      const index = cards.reduce(
-        (best, card, i) => (distance(card) < distance(cards[best]) ? i : best),
+      const distance = (card) => Math.abs(slideLeft(track, card) - left);
+      const nearest = cards.reduce(
+        (best, card, index) =>
+          distance(card) < distance(cards[best]) ? index : best,
         0,
       );
-      setActiveIndex(index);
+      setActiveIndex(nearest);
     });
-  };
+  }, []);
 
-  const select = (index) => {
-    const track = trackRef.current;
-    const next = Math.min(LAST_SLIDE, Math.max(0, index));
-    const card = track?.children[next];
-    if (!card) return;
+  const select = useCallback(
+    (index, { jump = false } = {}) => {
+      const track = trackRef.current;
+      const next = Math.min(LAST_SLIDE, Math.max(0, index));
+      const card = track?.children[next];
+      if (!card) return;
 
-    stopMotion();
-    const left = Math.min(
-      card.offsetLeft,
-      track.scrollWidth - track.clientWidth,
+      stopMotion();
+      const left = slideLeft(track, card);
+      setActiveIndex(next);
+      if (
+        jump ||
+        prefersReducedMotion() ||
+        Math.abs(track.scrollLeft - left) < 2
+      ) {
+        track.scrollLeft = left;
+        return;
+      }
+
+      const finish = () => {
+        motionRef.current = null;
+        track.style.removeProperty("scroll-snap-type");
+        readScroll();
+      };
+      motionRef.current = gsap.to(track, {
+        scrollTo: { x: left, autoKill: true, onAutoKill: finish },
+        duration: 0.68,
+        ease: "power3.inOut",
+        onComplete: finish,
+      });
+    },
+    [readScroll, stopMotion],
+  );
+
+  // Hero links and bookmarked sector URLs pick the corresponding slide before
+  // the page's normal hash navigation scrolls to the card.
+  useEffect(() => {
+    const index = GALLERY_INDUSTRIES.findIndex(
+      ({ id }) => hash === `#${industryAnchor(id)}`,
     );
-    setActiveIndex(next);
-    if (prefersReducedMotion() || Math.abs(track.scrollLeft - left) < 2) {
-      track.scrollLeft = left;
-      return;
-    }
+    if (index < 0) return;
+    select(index, { jump: true });
+    trackRef.current?.children[index]?.focus({ preventScroll: true });
+  }, [hash, key, select]);
 
-    const finish = () => {
-      motionRef.current = null;
-      track.style.removeProperty("scroll-snap-type");
-      readScroll();
-    };
-    motionRef.current = gsap.to(track, {
-      scrollTo: { x: left, autoKill: true, onAutoKill: finish },
-      duration: 0.68,
-      ease: "power3.inOut",
-      onComplete: finish,
-    });
-  };
+  if (!activeIndustry) return null;
 
   return (
     <section
@@ -134,29 +145,79 @@ export default function IndustriesSection({ onInquireIndustry }) {
       className="section-shell industries-section"
     >
       <div className="editorial-container">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+        <div className="industry-intro">
           <SectionHeading
             id="industries-heading"
             index="03"
-            eyebrow="Industries We Serve"
-            title="Technology Solutions Across Multiple Industries."
-            subtitle="Domain-aware AI systems and custom software applications built around the distinct operational needs of healthcare, education, commerce, luxury retail, human resources, and industrial sectors."
+            eyebrow="Industry Ecosystem"
+            title={
+              <>
+                Technology Solutions Across{" "}
+                <em className="section-accent">Multiple Industries.</em>
+              </>
+            }
+            subtitle="Medixo AI engineers AI systems, custom software, and automation for the distinct demands of each sector, from robotics and infrastructure to finance, commerce, and people operations."
           />
+          <div data-reveal className="industry-context">
+            <p className="editorial-label">Capabilities by sector</p>
+            <p>
+              These cards show solutions we can engineer. The imagery is
+              illustrative; project examples are listed separately.
+            </p>
+            <Link to="#our-work">
+              View selected projects{" "}
+              <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="industry-toolbar" data-reveal>
+          <div className="industry-directory">
+            <label htmlFor="industry-directory" className="editorial-label">
+              Explore by industry
+            </label>
+            <div className="industry-select">
+              <select
+                id="industry-directory"
+                value={activeIndustry.id}
+                aria-controls="industry-gallery"
+                onChange={(event) =>
+                  select(
+                    GALLERY_INDUSTRIES.findIndex(
+                      ({ id }) => id === event.target.value,
+                    ),
+                    { jump: true },
+                  )
+                }
+              >
+                {DIRECTORY_GROUPS.map((group) => (
+                  <optgroup key={group.id} label={group.title}>
+                    {group.entries.map(({ id, title }) => (
+                      <option value={id} key={id}>
+                        {title}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+              <ChevronDown size={16} aria-hidden="true" />
+            </div>
+          </div>
           <div
             className="industry-controls"
-            data-reveal
             role="group"
-            aria-label="Slide through industries"
+            aria-label="Browse industry cards"
           >
-            <span aria-hidden="true" className="editorial-label">
-              {PRIMARY_INDUSTRIES[activeIndex].number} / 0
-              {PRIMARY_INDUSTRIES.length}
+            <span className="editorial-label" aria-hidden="true">
+              {formatNumber(activeIndex + 1)} <span>/</span>{" "}
+              {formatNumber(GALLERY_INDUSTRIES.length)}
             </span>
             <button
               type="button"
               className="icon-button"
               disabled={activeIndex === 0}
               onClick={() => select(activeIndex - 1)}
+              aria-controls="industry-gallery"
               aria-label="Previous industry"
             >
               <ArrowLeft size={16} aria-hidden="true" />
@@ -166,32 +227,16 @@ export default function IndustriesSection({ onInquireIndustry }) {
               className="icon-button icon-button--dark"
               disabled={activeIndex === LAST_SLIDE}
               onClick={() => select(activeIndex + 1)}
+              aria-controls="industry-gallery"
               aria-label="Next industry"
             >
               <ArrowRight size={16} aria-hidden="true" />
             </button>
           </div>
-        </div>
-
-        <div
-          data-reveal
-          ref={tabsRef}
-          className="industry-index no-scrollbar"
-          aria-label="Industry index"
-          role="group"
-        >
-          {PRIMARY_INDUSTRIES.map((industry, index) => (
-            <button
-              key={industry.id}
-              type="button"
-              onClick={() => select(index)}
-              aria-pressed={index === activeIndex}
-              aria-controls="industry-gallery"
-              style={{ "--industry-accent": industry.accent }}
-            >
-              <span aria-hidden="true">{industry.number}</span> {industry.title}
-            </button>
-          ))}
+          <span className="sr-only" role="status">
+            {activeIndustry.title}, {activeIndex + 1} of{" "}
+            {GALLERY_INDUSTRIES.length}
+          </span>
         </div>
 
         <div
@@ -203,57 +248,27 @@ export default function IndustriesSection({ onInquireIndustry }) {
           onScroll={readScroll}
           className="industry-track no-scrollbar"
           onKeyDown={(event) => {
-            if (
-              event.target !== event.currentTarget ||
-              !["ArrowLeft", "ArrowRight"].includes(event.key)
-            )
-              return;
-            event.preventDefault();
-            select(activeIndex + (event.key === "ArrowLeft" ? -1 : 1));
+            if (event.target !== event.currentTarget) return;
+            if (event.key === "Home" || event.key === "End") {
+              event.preventDefault();
+              select(event.key === "Home" ? 0 : LAST_SLIDE, { jump: true });
+            } else if (["ArrowLeft", "ArrowRight"].includes(event.key)) {
+              event.preventDefault();
+              select(activeIndex + (event.key === "ArrowLeft" ? -1 : 1));
+            }
           }}
         >
-          {PRIMARY_INDUSTRIES.map((industry, index) => (
+          {GALLERY_INDUSTRIES.map((industry, index) => (
             <IndustryCard
               key={industry.id}
               industry={industry}
+              number={formatNumber(index + 1)}
+              isLead={index === 0}
               isActive={index === activeIndex}
               onSelect={() => select(index)}
-              onInquire={() =>
-                onInquireIndustry?.({ industry: industry.title })
-              }
+              onInquire={onInquireIndustry}
             />
           ))}
-        </div>
-
-        <div className="additional-sectors">
-          <div className="flex flex-wrap justify-between gap-2 mb-5">
-            <h3 className="editorial-label">Additional Sectors Supported</h3>
-            <span className="text-[13px] text-[var(--text-secondary)]">
-              Tailored architecture for specialized enterprise domains
-            </span>
-          </div>
-          <ul>
-            {ADDITIONAL_INDUSTRIES.map((sector, index) => (
-              <li
-                key={sector.id}
-                data-extra-industry
-                style={{ "--sector-accent": SECTOR_ACCENTS[index] }}
-              >
-                <h4 className="font-display">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onInquireIndustry?.({ industry: sector.title })
-                    }
-                  >
-                    <span>{sector.title}</span>
-                    <ArrowUpRight size={16} aria-hidden="true" />
-                  </button>
-                </h4>
-                <p>{sector.detail}</p>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </section>
