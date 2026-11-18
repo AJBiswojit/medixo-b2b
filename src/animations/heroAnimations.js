@@ -1,406 +1,232 @@
-import { gsap } from "./animationConfig";
+import { gsap, ScrollTrigger } from "./animationConfig";
+import { corridorPose, measureCorridor } from "./heroCorridor";
 
-// Timing is a fraction of the scroll span. The flight points are two Bézier
-// controls and a landing: [canvas x, canvas y, camera depth in px]. The first
-// point is measured from each card's original CSS position at refresh time.
-// Bank is [pitch, yaw, roll]; landing is [roll, scale, opacity].
-const FLIGHTS = {
-  ai: {
-    timing: [0.035, 0.91],
-    points: [
-      [0.255, 0.177, 35],
-      [0.29, 0.238, 210],
-      [0.38, 0.47, 177],
-    ],
-    bank: [-10, -16, 6],
-    landing: [-4, 1.12, 1],
-  },
-  healthcare: {
-    timing: [0.065, 0.86],
-    points: [
-      [1.02, 0.44, -160],
-      [0.69, 0.41, -280],
-      [0.533, 0.27, -196],
-    ],
-    bank: [13, 17, -8],
-    landing: [6, 0.91, 0.95],
-  },
-  education: {
-    timing: [0.15, 0.94],
-    points: [
-      [0.24, 0.41, -170],
-      [0.32, 0.38, -265],
-      [0.444, 0.765, -35],
-    ],
-    bank: [18, -10, -7],
-    landing: [4, 1.02, 1],
-  },
-  commerce: {
-    timing: [0.1, 0.93],
-    points: [
-      [0.91, 0.48, -92],
-      [0.57, 0.34, -135],
-      [0.758, 0.724, 30],
-    ],
-    bank: [14, 15, 9],
-    landing: [-6, 0.99, 1],
-  },
-  vision: {
-    timing: [0.045, 0.84],
-    points: [
-      [0.17, 0.19, -235],
-      [0.43, 0.12, -330],
-      [0.212, 0.335, -145],
-    ],
-    bank: [-13, -22, -11],
-    landing: [-7, 0.97, 0.96],
-  },
-  creative: {
-    timing: [0.085, 0.92],
-    points: [
-      [0.976, 0.67, 40],
-      [0.77, 0.85, 210],
-      [0.635, 0.5, 205],
-    ],
-    bank: [-15, 23, 8],
-    landing: [6, 1.19, 1],
-  },
-  automation: {
-    timing: [0.12, 0.87],
-    points: [
-      [0.36, 0.44, -95],
-      [0.52, 0.31, -220],
-      [0.227, 0.65, -105],
-    ],
-    bank: [12, -19, -16],
-    landing: [4, 0.99, 0.97],
-  },
-  enterprise: {
-    timing: [0.055, 0.89],
-    points: [
-      [0.94, 0.74, -82],
-      [0.57, 0.79, -160],
-      [0.836, 0.25, -138],
-    ],
-    bank: [-15, 13, 16],
-    landing: [-4, 0.97, 0.96],
-  },
-};
+const OPENING_HOLD = 0.48;
+const APPROACH = 0.96;
+const HOLD = 0.64;
+const HANDOFF = 0.54;
+const GALLERY_RESET = 1.68;
+const HEADLINE_RETURN = 0.55;
+const CTA_RETURN = 0.44;
+const CUE_REVEAL = 0.38;
+const RELEASE_HOLD = 0.18;
+const OPEN_TRAVEL = -0.5;
+const px = (n) => `${n.toFixed(2)}px`;
 
-// Opening cards keep their original paths. A second set takes over their
-// landing positions in staggered passes, entering from the far depth plane.
-const OPENING_SPAN = 0.83;
-const SECTOR_LANES = {
-  ai: {
-    timing: [0.66, 0.97],
-    launch: [0.11, 0.52, -460],
-    bend: [
-      [0.2, 0.18, -300],
-      [0.28, 0.28, 190],
-    ],
-  },
-  healthcare: {
-    timing: [0.55, 0.89],
-    launch: [0.92, 0.23, -435],
-    bend: [
-      [0.86, 0.12, -305],
-      [0.65, 0.18, -165],
-    ],
-  },
-  education: {
-    timing: [0.64, 0.94],
-    launch: [0.13, 0.87, -380],
-    bend: [
-      [0.24, 0.86, -250],
-      [0.4, 0.61, 20],
-    ],
-  },
-  commerce: {
-    timing: [0.69, 0.95],
-    launch: [0.94, 0.82, -380],
-    bend: [
-      [0.97, 0.61, -265],
-      [0.9, 0.57, 95],
-    ],
-  },
-  vision: {
-    timing: [0.56, 0.87],
-    launch: [0.12, 0.54, -475],
-    bend: [
-      [0.08, 0.48, -300],
-      [0.16, 0.27, -160],
-    ],
-  },
-  creative: {
-    timing: [0.7, 0.98],
-    launch: [0.95, 0.26, -460],
-    bend: [
-      [0.94, 0.47, -290],
-      [0.8, 0.63, 190],
-    ],
-  },
-  automation: {
-    timing: [0.6, 0.9],
-    launch: [0.11, 0.65, -430],
-    bend: [
-      [0.22, 0.48, -280],
-      [0.32, 0.51, 15],
-    ],
-  },
-  enterprise: {
-    timing: [0.58, 0.88],
-    launch: [0.94, 0.5, -440],
-    bend: [
-      [0.99, 0.37, -305],
-      [0.91, 0.2, -125],
-    ],
-  },
-};
+function createCorridor(scope, mode) {
+  const stage = scope.querySelector("[data-hero-stage]");
+  const brand = stage.querySelector("[data-hero-brand]");
+  const intro = stage.querySelector("[data-hero-intro]");
+  const cue = stage.querySelector("[data-hero-scroll-cue]");
+  const cueArrow = cue.querySelector("svg");
+  const cards = Array.from(stage.querySelectorAll("[data-hero-card]"), (el) => {
+    const frame = el.querySelector(".hero-frame");
+    const image = frame.querySelector("img");
+    return { el, frame, image, loading: image.loading };
+  });
+  const camera = { travel: OPEN_TRAVEL, depth: 0 };
+  let layout;
+  let previous;
 
-const COMPACT_FLIGHTS = {
-  ai: [5, -14, 1],
-  healthcare: [7, 2, -1],
-  commerce: [4, -10, -1.6],
-  enterprise: [-4, -5, 0.8],
-};
+  stage.dataset.mode = mode;
 
-function makeFlight(
-  card,
-  { timing: [start, end], points, bank, landing, launch, retireAt },
-) {
-  const [pitch, yaw, roll] = bank;
-  const [endRoll, endScale, endOpacity] = landing;
-  const restRoll = parseFloat(card.style.getPropertyValue("--tile-tilt"));
-  const driver = { t: 0, recede: 0 };
-  let lastT = 0;
-  let lastRecede = 0;
-  let controls;
+  function paint() {
+    const { travel, depth } = camera;
+    if (previous?.travel === travel && previous.depth === depth) return;
+    previous = { travel, depth };
 
-  return {
-    addTo(timeline) {
-      timeline.to(
-        driver,
-        { t: 1, duration: end - start, ease: "sine.inOut" },
-        start,
-      );
-      if (retireAt !== undefined) {
-        timeline.to(
-          driver,
-          { recede: 1, duration: 0.122, ease: "sine.inOut" },
-          retireAt,
-        );
-      }
-    },
-    measure(width, height) {
-      const x = card.offsetLeft + card.offsetWidth / 2;
-      const y = card.offsetTop + card.offsetHeight / 2;
-      const point = ([u, v, depth]) => [u * width - x, v * height - y, depth];
-      controls = [launch ? point(launch) : [0, 0, 0], ...points.map(point)];
-      lastT = -1;
-    },
-    draw() {
-      const { t, recede } = driver;
-      if (t === lastT && recede === lastRecede) return;
-      lastT = t;
-      lastRecede = recede;
-      if (t === 0 && recede === 0) {
-        this.reset();
-        return;
-      }
-      if (recede === 1) {
-        card.style.visibility = "hidden";
-        card.style.removeProperty("transform");
-        card.style.removeProperty("opacity");
-        return;
-      }
-
-      // Evaluate the cubic in xyz. Retiring cards sink as their next sector
-      // enters the lane, so the visual count stays near the opening eight.
-      const inverse = 1 - t;
-      const a = inverse * inverse * inverse;
-      const b = 3 * inverse * inverse * t;
-      const c = 3 * inverse * t * t;
-      const d = t * t * t;
-      const [p0, p1, p2, p3] = controls;
-      const x = a * p0[0] + b * p1[0] + c * p2[0] + d * p3[0];
-      const y = a * p0[1] + b * p1[1] + c * p2[1] + d * p3[1] - 45 * recede;
-      const z = a * p0[2] + b * p1[2] + c * p2[2] + d * p3[2] - 360 * recede;
-      const lean = 4 * t * inverse;
-      const rotation = restRoll + (endRoll - restRoll) * t + roll * lean;
-      const scale = (1 + (endScale - 1) * t) * (1 - 0.16 * recede);
-      const clarity = 1 + (endOpacity - 1) * t - Math.max(0, -z / 1800) * lean;
-      const opacity =
-        clarity * (1 - recede) * (launch ? Math.min(1, 4.3 * t) : 1);
-      card.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, ${z.toFixed(2)}px) rotateX(${(pitch * lean).toFixed(2)}deg) rotateY(${(yaw * lean).toFixed(2)}deg) rotateZ(${rotation.toFixed(2)}deg) scale(${scale.toFixed(4)})`;
-      card.style.opacity = opacity.toFixed(3);
-      if (launch || recede || card.style.visibility) {
-        const visibility = opacity < 0.025 ? "hidden" : "visible";
-        if (card.style.visibility !== visibility)
-          card.style.visibility = visibility;
-      }
-    },
-    reset() {
-      card.style.removeProperty("transform");
-      card.style.removeProperty("opacity");
-      card.style.removeProperty("visibility");
-    },
-  };
-}
-
-function createDesktopScene(scope, select) {
-  const [scene] = select(".hero-scene");
-  const [gallery] = select(".hero-gallery");
-  const [progress] = select(".hero-progress-fill");
-  const [scrim] = select(".hero-scrim");
-  const [content] = select(".hero-content");
-  const [actions] = select(".hero-actions");
-  const [copy] = select(".hero-copy");
-  const [tagline] = select(".hero-tagline");
-  const [title] = select(".hero-title");
-  const [label] = select(".hero-scene-label");
-  const cards = select("[data-hero-card]");
-  const sectorSlots = new Set(
-    cards.map((card) => card.dataset.heroIndustry).filter(Boolean),
-  );
-  const flights = cards.map((card) => {
-    const sectorSlot = card.dataset.heroIndustry;
-    const slot = sectorSlot || card.dataset.heroCard;
-    const flight = FLIGHTS[slot];
-    const lane = SECTOR_LANES[slot];
-    if (sectorSlot) {
-      return makeFlight(card, {
-        ...flight,
-        timing: lane.timing,
-        launch: lane.launch,
-        points: [...lane.bend, flight.points[2]],
-      });
+    for (const [index, { el, frame }] of cards.entries()) {
+      const pose = corridorPose(layout, camera, index, cards.length);
+      frame.style.transform = `translate3d(calc(${px(pose.x)} - 50%), calc(${px(pose.y)} - 50%), ${px(pose.z)}) rotateY(${pose.yaw.toFixed(2)}deg) scale(${pose.scale.toFixed(4)})`;
+      frame.style.opacity = pose.opacity.toFixed(4);
+      frame.style.setProperty("--hero-shade", pose.shade.toFixed(4));
+      el.style.setProperty("--caption-opacity", pose.caption.toFixed(4));
+      el.style.setProperty("--caption-top", px(pose.captionY));
+      el.toggleAttribute("data-primary", pose.primary);
     }
-    return makeFlight(card, {
-      ...flight,
-      timing: flight.timing.map((time) => time * OPENING_SPAN),
-      retireAt: sectorSlots.has(slot) ? lane.timing[0] - 0.047 : undefined,
-    });
-  });
-  const draw = () => flights.forEach((flight) => flight.draw());
-  const measure = () => {
-    const { clientWidth, clientHeight } = gallery;
-    flights.forEach((flight) => flight.measure(clientWidth, clientHeight));
-    draw();
-  };
+  }
+
+  function measure() {
+    layout = measureCorridor(stage.clientWidth, stage.clientHeight, mode);
+    stage.style.setProperty("--hero-perspective", px(layout.perspective));
+    stage.style.setProperty(
+      "--hero-portrait-height",
+      px(layout.portraitHeight),
+    );
+    previous = null;
+    paint();
+  }
+
   measure();
+  // Prioritize the open banks. Keep native lazy loading for out-of-view
+  // portraits on smaller screens and for the normal-flow gallery.
+  if (mode !== "mobile") {
+    cards.forEach(({ image }, index) => {
+      if (corridorPose(layout, camera, index, cards.length).opacity === 1) {
+        image.loading = "eager";
+      }
+    });
+  }
+  const sequence = gsap.timeline({ paused: true, onUpdate: paint });
+  sequence
+    .addLabel("opening", 0)
+    .to(
+      camera,
+      { travel: 0, depth: 1, duration: APPROACH, ease: "sine.inOut" },
+      OPENING_HOLD,
+    )
+    .to(brand, { opacity: 0, duration: 0.56, ease: "sine.inOut" }, OPENING_HOLD)
+    .to(intro, { opacity: 0, duration: 0.44, ease: "sine.inOut" }, OPENING_HOLD)
+    // Keep the intro in the reading order, but don't tab to invisible CTAs.
+    .set(intro, { inert: true }, OPENING_HOLD + 0.38);
 
-  const timeline = gsap.timeline({
-    defaults: { ease: "sine.inOut" },
-    onUpdate: draw,
-    scrollTrigger: {
-      id: "hero-scene",
-      trigger: scene,
-      start: () => `top top+=${parseFloat(getComputedStyle(scope).paddingTop)}`,
-      // Budget the scrub against the artboard, not an empty viewport-height
-      // box. Its natural height also lets About reach the rail at pin release.
-      end: () =>
-        `+=${Math.round(gsap.utils.clamp(760, 1120, scene.offsetHeight * 1.18))}`,
-      scrub: true,
-      pin: true,
-      pinSpacing: true,
-      refreshPriority: 1,
-      onRefresh: measure,
-    },
+  let cursor = OPENING_HOLD + APPROACH;
+  const chapterStarts = new Map([
+    [0, "intelligence-and-software"],
+    [4, "vision-automation-and-data"],
+    [8, "industries"],
+  ]);
+  cards.forEach(({ el }, index) => {
+    if (chapterStarts.has(index))
+      sequence.addLabel(chapterStarts.get(index), cursor);
+    sequence.addLabel(el.dataset.heroCard, cursor);
+    const chapterEnd = (index + 1) % 4 === 0;
+    cursor += HOLD + (chapterEnd ? 0.12 : 0);
+    if (index < cards.length - 1) {
+      const duration = HANDOFF + (chapterEnd ? 0.11 : 0);
+      sequence.to(
+        camera,
+        { travel: index + 1, duration, ease: "sine.inOut" },
+        cursor,
+      );
+      cursor += duration;
+    }
   });
 
-  flights.forEach((flight) => flight.addTo(timeline));
+  const phone = mode === "mobile";
+  const recede = phone ? 1.02 : GALLERY_RESET;
+  const panDelay = phone ? recede : 0.18;
+  const galleryRestored = cursor + GALLERY_RESET;
+  const restored = galleryRestored + 0.19;
 
-  timeline
-    .addLabel("departure", 0.09)
-    .addLabel("crossing", 0.42)
-    .addLabel("resolve", 0.67)
-    .to(progress, { scaleX: 1, duration: 1, ease: "none" }, 0)
-    .to(scrim, { opacity: 0.93, duration: 0.21 }, "departure")
-    .to(actions, { opacity: 0, y: -12, duration: 0.13 }, "crossing")
-    .set(actions, { pointerEvents: "none" }, "crossing+=0.12")
-    .to(copy, { opacity: 0, y: -22, duration: 0.14 }, "crossing+=0.02")
-    .to(tagline, { opacity: 0, y: -15, duration: 0.14 }, "crossing+=0.05")
-    .to(title, { opacity: 0, y: -36, duration: 0.165 }, "crossing+=0.055")
-    .set(content, { pointerEvents: "none" }, "resolve")
-    .to(scrim, { opacity: 0, duration: 0.135 }, "resolve-=0.105")
-    .to(label, { opacity: 1, y: 0, duration: 0.16 }, "resolve+=0.04");
+  sequence
+    .addLabel("reset", cursor)
+    .set(brand, { "--hero-brand-y": "8px" }, "reset")
+    // Ease the final portrait away, then advance half a station on the same
+    // rail. In a cyclic gallery this is the exact opening camera pose.
+    .to(camera, { depth: 0, duration: recede, ease: "sine.inOut" }, "reset")
+    .to(
+      camera,
+      {
+        travel: cards.length + OPEN_TRAVEL,
+        duration: GALLERY_RESET - panDelay,
+        ease: "sine.inOut",
+      },
+      cursor + panDelay,
+    )
+    .addLabel("gallery-restored", galleryRestored)
+    // Let the headline and supporting group return as the rails finish
+    // settling. The same two links become interactive only when fully visible.
+    .to(
+      brand,
+      {
+        opacity: 1,
+        "--hero-brand-y": "0px",
+        duration: HEADLINE_RETURN,
+        ease: "sine.out",
+      },
+      restored - HEADLINE_RETURN,
+    )
+    .to(
+      intro,
+      { opacity: 1, duration: CTA_RETURN, ease: "sine.inOut" },
+      restored - CTA_RETURN,
+    )
+    .addLabel("restored", restored)
+    .set(intro, { inert: false }, "restored")
+    .addLabel("cue", restored + 0.06)
+    .fromTo(
+      cue,
+      { autoAlpha: 0 },
+      {
+        autoAlpha: 1,
+        duration: CUE_REVEAL,
+        ease: "sine.inOut",
+        immediateRender: false,
+      },
+      "cue",
+    )
+    .fromTo(
+      cueArrow,
+      { y: -6 },
+      {
+        y: 0,
+        duration: CUE_REVEAL,
+        ease: "sine.out",
+        immediateRender: false,
+      },
+      "cue",
+    )
+    // Hold the complete composition briefly, then let it scroll out as a
+    // unit with no additional spacer or independent cue animation.
+    .to({}, { duration: RELEASE_HOLD });
+  const duration = sequence.duration();
+  sequence.addLabel("release", duration);
+
+  ScrollTrigger.create({
+    id: "hero-corridor",
+    trigger: stage,
+    animation: sequence,
+    start: () => `top top+=${parseFloat(getComputedStyle(scope).paddingTop)}`,
+    end: () => {
+      // Scale the reading distance with available space, not the time the
+      // visitor spends on the page. Short viewports get a shorter pin.
+      const unit =
+        mode === "mobile"
+          ? gsap.utils.clamp(125, 168, stage.clientHeight * 0.218)
+          : gsap.utils.clamp(161, 213, stage.clientHeight * 0.264);
+      return `+=${Math.round(duration * unit)}`;
+    },
+    scrub: 1,
+    pin: true,
+    pinSpacing: true,
+    refreshPriority: 1,
+    onRefresh: measure,
+  });
 
   return () => {
-    flights.forEach((flight) => flight.reset());
-    // The pin can render time zero during a media change. Drop those inline
-    // values too, so the static and compact layouts are owned solely by CSS.
-    [progress, scrim, content, actions, copy, tagline, title, label].forEach(
-      (layer) => layer.removeAttribute("style"),
-    );
+    delete stage.dataset.mode;
+    stage.style.removeProperty("--hero-perspective");
+    stage.style.removeProperty("--hero-portrait-height");
+    intro.inert = false;
+    cards.forEach(({ el, frame, image, loading }) => {
+      image.loading = loading;
+      frame.removeAttribute("style");
+      el.removeAttribute("style");
+      el.removeAttribute("data-primary");
+    });
   };
-}
-
-function createCompactScene(select, tablet) {
-  const [gallery] = select(".hero-gallery");
-  const timeline = gsap.timeline({
-    scrollTrigger: {
-      id: "hero-scene",
-      trigger: gallery,
-      start: () =>
-        Math.max(
-          0,
-          gallery.getBoundingClientRect().top +
-            window.scrollY -
-            window.innerHeight * 0.72,
-        ),
-      end: () => {
-        const span = window.innerHeight * (tablet ? 0.47 : 0.33);
-        return `+=${Math.round(gsap.utils.clamp(180, tablet ? 410 : 300, span))}`;
-      },
-      scrub: true,
-    },
-  });
-  const amplitude = tablet ? 1.35 : 1;
-  const cards = select("[data-compact]");
-  cards.forEach((card, i) => {
-    const [x, y, roll] = COMPACT_FLIGHTS[card.dataset.heroCard];
-    const offset = i * 0.07;
-    // Offset the CSS resting pose instead of caching it in GSAP's transform.
-    // This keeps the same small arc when a short desktop layout becomes a grid.
-    timeline
-      .to(
-        card,
-        {
-          "--tile-arc-x": `${x * amplitude}px`,
-          "--tile-arc-tilt": `${roll}deg`,
-          duration: 0.79,
-          ease: "sine.inOut",
-        },
-        offset,
-      )
-      .to(
-        card,
-        {
-          "--tile-arc-y": `${y * amplitude}px`,
-          duration: 0.79,
-          ease: "power1.out",
-        },
-        offset,
-      );
-  });
 }
 
 export function initHeroAnimations(scope) {
   if (!scope) return;
-  const select = gsap.utils.selector(scope);
-  const context = gsap.context(() => {
-    gsap.matchMedia(scope).add(
-      {
-        motion: "(prefers-reduced-motion: no-preference)",
-        desktop: "(min-width: 1100px) and (min-height: 680px)",
-        tablet: "(min-width: 680px)",
-      },
-      ({ conditions }) => {
-        if (!conditions.motion) return;
-        if (conditions.desktop) return createDesktopScene(scope, select);
-        createCompactScene(select, conditions.tablet);
-      },
-    );
-  }, scope);
-  return () => context.revert();
+  // matchMedia scopes each setup in a GSAP context. Reverting it removes the
+  // pin, timeline and inline tween styles, including under React StrictMode.
+  const media = gsap.matchMedia(scope);
+  media.add(
+    {
+      motion: "(prefers-reduced-motion: no-preference)",
+      roomToPin: "(min-height: 530px)",
+      desktop: "(min-width: 1100px)",
+      tablet: "(min-width: 680px)",
+    },
+    ({ conditions: { motion, roomToPin, desktop, tablet } }) => {
+      if (!motion || !roomToPin) return;
+      return createCorridor(
+        scope,
+        desktop ? "desktop" : tablet ? "tablet" : "mobile",
+      );
+    },
+  );
+  return () => media.revert();
 }
