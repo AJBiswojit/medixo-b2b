@@ -41,7 +41,7 @@
 
 .hero-content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   text-align: center;
   max-width: 750px;
   margin-inline: auto;
@@ -80,18 +80,6 @@
 }
 .hero-line {
   display: block;
-}
-
-.hero-word-mask {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: bottom;
-  padding: 0 0.055em 0.12em;
-  margin: 0 -0.055em -0.12em;
-}
-
-.hero-word-inner {
-  display: inline-block;
 }
 
 .hero-copy {
@@ -140,23 +128,31 @@
   padding: 0 0.12rem 0.65rem;
 }
 
-.hero-traces {
+.hero-traces,
+.hero-scrim,
+.hero-scene-label,
+.hero-progress {
   display: none;
 }
 .hero-card {
+  --tile-rest-y: 0px;
+  --tile-rest-tilt: -2deg;
+  --tile-arc-x: 0px;
+  --tile-arc-y: 0px;
+  --tile-arc-tilt: 0deg;
   min-width: 0;
+  transform: translate(
+      var(--tile-arc-x),
+      calc(var(--tile-rest-y) + var(--tile-arc-y))
+    )
+    rotate(calc(var(--tile-rest-tilt) + var(--tile-arc-tilt)));
 }
 .hero-card:not([data-compact]) {
   display: none;
 }
 .hero-card:nth-of-type(2n) {
-  translate: 0 10px;
-}
-.hero-card:nth-of-type(2n + 1) {
-  rotate: -2deg;
-}
-.hero-card:nth-of-type(2n) {
-  rotate: 2deg;
+  --tile-rest-y: 10px;
+  --tile-rest-tilt: 2deg;
 }
 
 .hero-tile {
@@ -408,17 +404,12 @@
 }
 .hero-margin a,
 .hero-edition,
-.hero-margin-actions,
-.hero-motion-control {
+.hero-margin-actions {
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
 }
-.hero-motion-control {
-  display: none;
-}
-.hero-margin a:hover,
-.hero-motion-control:hover {
+.hero-margin a:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -572,7 +563,7 @@
     right: 4%;
     bottom: 0;
     padding-block: 0.85rem 1.05rem;
-    z-index: 3;
+    z-index: 4;
   }
 
   .hero-gallery {
@@ -601,14 +592,14 @@
   }
 
   .hero-card:nth-of-type(n) {
+    --tile-rest-y: 0px;
+    --tile-rest-tilt: var(--tile-tilt);
     display: block;
     position: absolute;
     width: var(--tile-width);
     left: var(--tile-left, auto);
     right: var(--tile-right, auto);
     top: var(--tile-top);
-    translate: none;
-    rotate: var(--tile-tilt);
     pointer-events: auto;
     z-index: var(--tile-layer, 1);
   }
@@ -715,17 +706,112 @@
   }
 }
 
-@media (min-width: 1100px) and (prefers-reduced-motion: no-preference) {
-  .hero-margin-actions {
-    gap: 1.05rem;
+/* The second card library belongs to the desktop scroll scene only. */
+.hero-card[data-hero-industry] {
+  display: none;
+}
+.hero-card[data-hero-industry] img {
+  object-position: var(--industry-art-position, center);
+}
+
+/* The full-height pin is reserved for viewports that can show the artboard. */
+@media (min-width: 1100px) and (min-height: 680px) and (prefers-reduced-motion: no-preference) {
+  .hero-scene {
+    min-height: calc(100svh - var(--header-height));
   }
-  .hero-motion-control {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.36rem;
-    cursor: pointer;
-    border-right: 1px solid #20202022;
-    padding-right: 1.05rem;
+  .hero-canvas {
+    min-height: min(
+      max(
+        clamp(605px, 44.5vw, 702px),
+        min(880px, 100svh - var(--header-height) - 134px)
+      ),
+      100svh - var(--header-height) - 1px
+    );
+    padding-top: min(clamp(4rem, 4.85vw, 6rem), max(3.2rem, 18svh - 69px));
+    padding-bottom: min(3.85rem, max(3.4rem, 10svh - 14px));
+  }
+  .hero-title {
+    font-size: clamp(3.55rem, min(5.45vw, (100svh - 510px) / 3.05), 5.65rem);
+  }
+
+  .hero-gallery {
+    perspective: 1180px;
+    transform-style: preserve-3d;
+  }
+  .hero-card[data-hero-industry] {
+    display: block;
+    visibility: hidden;
+  }
+  .hero-scrim {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      ellipse 38% 57% at 50% 45%,
+      #fbfaf6 32%,
+      rgb(251 250 246 / 85%) 64%,
+      transparent 100%
+    );
+  }
+  .hero-scene-label {
+    display: block;
+    position: absolute;
+    inset: 11% 0 auto;
+    z-index: 2;
+    color: var(--green-ink);
+    text-align: center;
+    letter-spacing: 0.25em;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+  }
+
+  /* Keyboard access to the original actions shouldn't depend on scroll time. */
+  .hero-content:has(.hero-actions :focus-visible) {
+    pointer-events: auto !important;
+  }
+  .hero-content:has(.hero-actions :focus-visible) > * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .hero-content:has(.hero-actions :focus-visible) .hero-actions {
+    pointer-events: auto !important;
+  }
+  .hero-canvas:has(.hero-actions :focus-visible) .hero-scrim {
+    opacity: 1 !important;
+  }
+  .hero-canvas:has(.hero-actions :focus-visible) .hero-scene-label {
+    opacity: 0 !important;
+  }
+  /* Keep a tabbed-to card out of the text's scrim and any foreground overlap. */
+  .hero-card:has(.hero-tile:focus-visible) {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .hero-card:not([data-hero-industry]):has(.hero-tile:focus-visible) {
+    transform: rotate(var(--tile-tilt)) !important;
+  }
+
+  .hero-margin-actions {
+    gap: 0.85rem;
+  }
+  .hero-progress {
+    display: block;
+    width: clamp(35px, 4.2vw, 68px);
+    height: 2px;
+    border-radius: 2px;
+    background: #42605426;
+  }
+  .hero-progress-fill {
+    display: block;
+    height: 100%;
+    background: var(--green-ink);
+    border-radius: inherit;
+    transform: scaleX(0);
+    transform-origin: left center;
   }
 }
 

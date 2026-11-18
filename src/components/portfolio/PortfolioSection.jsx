@@ -47,7 +47,7 @@ export default function PortfolioSection({ onInquireProject }) {
           index="05"
           eyebrow="Our Work"
           title="Real Solutions. Real Industries."
-          subtitle="From digital commerce to intelligent healthcare and education platforms, explore how Medixo AI translates business requirements into technology solutions."
+          subtitle="Selected project examples from digital commerce, healthcare, and education. See how Medixo AI translates specific business requirements into technology solutions."
         />
         <nav
           aria-label="Jump to featured project"

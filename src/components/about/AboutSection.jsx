@@ -51,9 +51,10 @@ export default function AboutSection() {
             />
             <div className="about-prose" data-reveal>
               <p>
-                At Medixo AI, we bring together software engineering and
-                artificial intelligence to develop solutions that make
-                businesses smarter and more efficient.
+                Medixo AI is an AI-driven software engineering and technology
+                partner for businesses and industrial teams. We design custom
+                software and automation for work ranging from digital commerce
+                to manufacturing and infrastructure.
               </p>
               <p>
                 We work across multiple technology domains, including AI,
