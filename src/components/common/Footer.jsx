@@ -24,8 +24,9 @@ export default function Footer({ onSelectService }) {
               href="#home"
               onClick={(event) => handleAnchor(event, "home")}
               className="brand-link"
+              aria-label="Medixo AI — Back to home"
             >
-              <BrandMark />
+              <BrandMark onDark />
               <span>{BRAND.name}</span>
             </a>
             <p className="font-display">{BRAND.tagline}</p>

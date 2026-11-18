@@ -28,10 +28,6 @@
 .footer-brand .brand-link {
   color: #fff;
 }
-.footer-brand .brand-link svg {
-  border: 1px solid #ffffff54;
-  border-radius: 10px;
-}
 .footer-brand > .font-display {
   max-width: 26rem;
   margin-top: 1rem;

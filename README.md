@@ -9,7 +9,11 @@ npm ci
 npm run dev
 ```
 
-Run `npm run build` to compile the production site into `dist/`. Serve the entire `dist/` directory, including the local WebP images, fonts, and technology marks.
+Run `npm run build` to compile the production site into `dist/`. Serve the entire `dist/` directory, including the local WebP images, fonts, and SVG assets.
+
+## Brand logo
+
+`public/logo/MedixoEmblemWhite.svg` is the original Medixo AI emblem and is used unchanged on dark surfaces. `MedixoEmblemDark.svg` changes only its two visible gradient colours for light surfaces. The navbar, mobile menu, footer, credits page, and favicon use these public SVGs directly.
 
 ## Industry catalogue
 

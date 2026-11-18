@@ -169,6 +169,12 @@
   letter-spacing: 0.16em;
   line-height: 1;
 }
+.brand-mark {
+  display: block;
+  flex: none;
+  width: clamp(2.25rem, 4vw, 2.625rem);
+  height: auto;
+}
 .site-navigation,
 .site-navigation-cta {
   display: none;
