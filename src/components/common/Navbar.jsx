@@ -131,7 +131,15 @@ export default function Navbar({ onDiscussProject }) {
       >
         <div className="editorial-container py-6">
           <div className="flex justify-between items-center pb-4 border-b border-[#e8e6e1]">
-            <span className="editorial-label">Explore Medixo AI</span>
+            <Link
+              to="#home"
+              onClick={closeMenu}
+              className="brand-link"
+              aria-label="Medixo AI — Back to home"
+            >
+              <BrandMark />
+              <span>{BRAND.name}</span>
+            </Link>
             <button
               type="button"
               className="icon-button"

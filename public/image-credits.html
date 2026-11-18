@@ -4,6 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Image credits — Medixo AI</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      sizes="any"
+      href="/logo/MedixoEmblemDark.svg"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      sizes="any"
+      href="/logo/MedixoEmblemWhite.svg"
+      media="(prefers-color-scheme: dark)"
+    />
     <style>
       body {
         margin: 0;
@@ -22,6 +35,16 @@
         color: #36574c;
         text-underline-offset: 0.15em;
       }
+      .credits-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+      }
+      .credits-brand img {
+        flex: none;
+        width: 2rem;
+        height: auto;
+      }
       h2 {
         border-top: 1px solid #e8e8e8;
         padding-top: 1.2rem;
@@ -36,7 +59,15 @@
   </head>
   <body>
     <main>
-      <a href="/">&larr; Back to Medixo AI</a>
+      <a class="credits-brand" href="/">
+        <img
+          src="/logo/MedixoEmblemDark.svg"
+          alt=""
+          width="1080"
+          height="1080"
+        />
+        Back to Medixo AI
+      </a>
       <h1>Image credits</h1>
       <p>
         Editorial photography illustrates technology and industry use cases. It
@@ -210,6 +241,10 @@
         <li>
           Healthcare concept reference photograph:
           <a href="https://www.pexels.com/photo/6129041/">RDNE Stock project</a>
+        </li>
+        <li>
+          Pratikshya product-detail capture: Vermilion drape:
+          <a href="https://www.pexels.com/photo/9419149/">Abhishek Kumar</a>
         </li>
         <li>
           Pratikshya demo catalogue: Vermilion drape:
