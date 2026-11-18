@@ -5,7 +5,9 @@ export const PRIMARY_INDUSTRIES = [
     title: "Healthcare & Medical",
     summary:
       "Intelligent digital platforms, clinical document retrieval, and workflow systems designed for clarity and dependability across healthcare environments.",
-    image: "/images/project-medixo-health.jpg",
+    image: "/images/project-medixo-health.webp",
+    smallImage: "/images/project-medixo-health-520.webp",
+    imagePosition: "center 54%",
     alt: "Serene contemporary digital healthcare environment with soft muted mint architectural details",
     accent: "#ACC6C1",
     solutions: [
@@ -22,7 +24,9 @@ export const PRIMARY_INDUSTRIES = [
     title: "Education & EdTech",
     summary:
       "Modern academic platforms enabling automated question generation, examination workflows, structured assessment, and guided learning experiences.",
-    image: "/images/project-edux.jpg",
+    image: "/images/project-edux.webp",
+    smallImage: "/images/project-edux-520.webp",
+    imagePosition: "center 58%",
     alt: "Sunlit modern educational workspace with digital tablet, study materials, and muted sage accents",
     accent: "#E5D3C9",
     solutions: [
@@ -57,7 +61,8 @@ export const PRIMARY_INDUSTRIES = [
     title: "Jewellery & Fashion",
     summary:
       "Editorial digital commerce experiences, curated collection showcases, and integrated back-office systems tailored to fashion houses and jewellery brands.",
-    image: "/images/project-swarnova.jpg",
+    image: "/images/project-swarnova.webp",
+    imagePosition: "center 56%",
     alt: "Handcrafted gold jewellery displayed on warm cream travertine stone in soft morning sunlight",
     accent: "#E5D3C9",
     solutions: [
@@ -77,7 +82,7 @@ export const PRIMARY_INDUSTRIES = [
     // Locally optimized Pexels photograph 16585156.
     image: "/images/industry-people.webp",
     alt: "Collaborative team discussion inside a bright glass-walled contemporary corporate office",
-    accent: "#F5F5F3",
+    accent: "#DCE9D5",
     solutions: [
       "Recruitment Automation",
       "Candidate Assessment",
@@ -95,7 +100,7 @@ export const PRIMARY_INDUSTRIES = [
     // Locally optimized Pexels photograph 16544054.
     image: "/images/industry-manufacturing.webp",
     alt: "Precision modern robotic mechanism inside a clean industrial manufacturing environment",
-    accent: "#ACC6C1",
+    accent: "#D8E9F7",
     solutions: [
       "Computer Vision Applications",
       "Object Detection",

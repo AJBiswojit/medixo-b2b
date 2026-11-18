@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import {
   X,
   ArrowUpRight,
@@ -8,6 +8,7 @@ import {
   Check,
 } from "lucide-react";
 import Button from "../common/Button";
+import ProjectVisual, { InterfaceOutline } from "./ProjectVisual";
 
 export default function ProjectModal({
   project,
@@ -16,24 +17,33 @@ export default function ProjectModal({
   onSelectProject,
   onInquireProject,
 }) {
-  useEffect(() => {
-    if (!project) return undefined;
+  const dialogRef = useRef(null);
+  const titleRef = useRef(null);
+  const isOpen = Boolean(project);
 
-    const prevOverflow = document.body.style.overflow;
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    const dialog = dialogRef.current;
+    const opener = document.activeElement;
+    dialog.showModal();
+    dialog.scrollTop = 0;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-
-    const handleKey = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKey);
-
     return () => {
-      document.body.style.overflow = prevOverflow;
-      window.removeEventListener("keydown", handleKey);
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+      if (opener instanceof HTMLElement && opener.isConnected)
+        opener.focus({ preventScroll: true });
     };
-  }, [project, onClose]);
+  }, [isOpen]);
 
-  if (!project) return null;
+  if (!project) return <dialog ref={dialogRef} className="project-dialog" />;
+
+  const select = (next) => {
+    onSelectProject(next);
+    dialogRef.current.scrollTop = 0;
+    titleRef.current.focus({ preventScroll: true });
+  };
 
   const currentIdx = projects.findIndex((p) => p.id === project.id);
   const prevProject =
@@ -41,20 +51,22 @@ export default function ProjectModal({
   const nextProject = projects[(currentIdx + 1) % projects.length];
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={dialogRef}
       aria-labelledby="project-modal-title"
-      className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-6 bg-[#202020]/45 backdrop-blur-xs"
-      onClick={onClose}
+      className="project-dialog"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
     >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-4xl max-h-[90dvh] overflow-y-auto rounded-[26px] bg-white border border-[#EAEAEA] shadow-editorial-lg"
-      >
+      <div>
         {/* Sticky Modal Header */}
         <div className="sticky top-0 z-20 flex items-center justify-between gap-4 px-6 sm:px-8 py-4 bg-white/95 backdrop-blur-md border-b border-[#EAEAEA]">
-          <div className="flex items-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.15em] text-[#777777]">
+          <div className="flex items-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.15em] text-[var(--text-secondary)]">
             <span
               className="w-2.5 h-2.5 rounded-full"
               style={{ backgroundColor: project.badgeTone }}
@@ -68,8 +80,9 @@ export default function ProjectModal({
           <button
             type="button"
             onClick={onClose}
+            autoFocus
             aria-label="Close project overview"
-            className="w-9 h-9 rounded-full border border-[#EAEAEA] bg-[#F5F5F3] hover:bg-[#E8E8E8] flex items-center justify-center text-[#202020] transition-colors cursor-pointer"
+            className="w-9 h-9 shrink-0 rounded-full border border-[#EAEAEA] bg-[#F5F5F3] hover:bg-[#E8E8E8] flex items-center justify-center text-[#202020] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" aria-hidden="true" />
           </button>
@@ -78,20 +91,18 @@ export default function ProjectModal({
         {/* Modal Body */}
         <div className="p-6 sm:p-9 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-7 items-center">
-            <div className="md:col-span-6 rounded-[20px] overflow-hidden border border-[#EAEAEA] bg-[#F5F5F3]">
-              <img
-                src={project.primaryImage}
-                alt={project.primaryAlt}
-                className="w-full aspect-[4/3] object-cover object-[50%_55%]"
-              />
+            <div className="md:col-span-6 min-w-0">
+              <ProjectVisual key={project.id} project={project} />
             </div>
 
             <div className="md:col-span-6 space-y-4">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[#777777]">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[var(--text-secondary)]">
                 {project.industry}
               </p>
               <h3
                 id="project-modal-title"
+                ref={titleRef}
+                tabIndex={-1}
                 className="font-display text-[2rem] sm:text-[2.35rem] leading-[1.1] text-[#202020]"
               >
                 {project.displayName}
@@ -105,10 +116,12 @@ export default function ProjectModal({
             </div>
           </div>
 
+          <InterfaceOutline project={project} />
+
           {/* Capabilities & Solution Focus */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pt-6 border-t border-[#EAEAEA]">
             <div className="md:col-span-7">
-              <h4 className="text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[#777777] mb-4">
+              <h4 className="text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[var(--text-secondary)] mb-4">
                 Delivered Capabilities
               </h4>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -118,7 +131,10 @@ export default function ProjectModal({
                     className="flex items-start gap-2.5 text-[13.5px] text-[#202020]"
                   >
                     <span className="w-5 h-5 rounded-full bg-[#F5F5F3] border border-[#EAEAEA] flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 text-[#202020]" aria-hidden="true" />
+                      <Check
+                        className="w-3 h-3 text-[#202020]"
+                        aria-hidden="true"
+                      />
                     </span>
                     <span>{item}</span>
                   </li>
@@ -128,7 +144,7 @@ export default function ProjectModal({
 
             <div className="md:col-span-5 space-y-5">
               <div>
-                <h4 className="text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[#777777] mb-3.5">
+                <h4 className="text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[var(--text-secondary)] mb-3.5">
                   Solution Architecture Notes
                 </h4>
                 <ul className="space-y-2.5">
@@ -144,7 +160,7 @@ export default function ProjectModal({
               </div>
 
               <div>
-                <h4 className="text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[#777777] mb-2.5">
+                <h4 className="text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[var(--text-secondary)] mb-2.5">
                   Technology Stack
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
@@ -172,7 +188,7 @@ export default function ProjectModal({
                   ? "Live Environment Available"
                   : "Guided Walkthrough Available on Request"}
               </p>
-              <p className="text-[13px] text-[#777777]">
+              <p className="text-[13px] text-[var(--text-secondary)]">
                 {project.projectUrl
                   ? "Explore the live deployment or discuss adapting a similar architecture for your organization."
                   : "A public link is not attached to this showcase. Connect with Medixo AI to request a project walkthrough or discuss a tailored solution."}
@@ -210,7 +226,7 @@ export default function ProjectModal({
           <div className="pt-4 border-t border-[#EAEAEA] flex items-center justify-between gap-4">
             <button
               type="button"
-              onClick={() => onSelectProject(prevProject)}
+              onClick={() => select(prevProject)}
               className="inline-flex items-center gap-2 text-[13px] font-medium text-[#555555] hover:text-[#202020] transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" aria-hidden="true" />
@@ -219,7 +235,7 @@ export default function ProjectModal({
 
             <button
               type="button"
-              onClick={() => onSelectProject(nextProject)}
+              onClick={() => select(nextProject)}
               className="inline-flex items-center gap-2 text-[13px] font-medium text-[#555555] hover:text-[#202020] transition-colors cursor-pointer"
             >
               <span>{nextProject.displayName}</span>
@@ -228,6 +244,6 @@ export default function ProjectModal({
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

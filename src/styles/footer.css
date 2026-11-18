@@ -1,0 +1,115 @@
+.site-footer {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding-block: clamp(2.7rem, 5.5vw, 4.75rem) 1.2rem;
+  background: #202020;
+  color: #f8f7f3;
+}
+.site-footer::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: radial-gradient(circle, #aac6ba 0.6px, transparent 0.95px)
+    center/14px 14px;
+  opacity: 0.17;
+  mask-image: radial-gradient(ellipse at 7% 24%, #000, transparent 54%);
+  pointer-events: none;
+}
+.site-footer :focus-visible {
+  outline-color: #acc6c1;
+}
+.footer-grid {
+  display: grid;
+  align-items: start;
+  gap: clamp(1.65rem, 4vw, 3.5rem);
+}
+.footer-brand .brand-link {
+  color: #fff;
+}
+.footer-brand .brand-link svg {
+  border: 1px solid #ffffff54;
+  border-radius: 10px;
+}
+.footer-brand > .font-display {
+  max-width: 26rem;
+  margin-top: 1rem;
+  font-size: clamp(1.45rem, 2.65vw, 2.35rem);
+  line-height: 1.12;
+  color: #fff;
+}
+.footer-brand > p:last-child {
+  color: #ceccc4;
+  font-size: 0.84rem;
+  line-height: 1.64;
+  max-width: 24rem;
+  margin-top: 0.85rem;
+}
+.footer-link-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.35rem 0.95rem;
+}
+.footer-link-grid h3 {
+  color: #b8d0c8;
+}
+.footer-link-grid ul {
+  display: grid;
+  gap: 0.63rem;
+  margin-top: 0.85rem;
+}
+.footer-link-grid a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #efeee8;
+  font-size: 0.83rem;
+  line-height: 1.35;
+}
+.footer-link-grid a:hover {
+  color: #c6ded5;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.footer-base {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.3rem;
+  padding-top: 1.1rem;
+  margin-top: clamp(1.65rem, 3.8vw, 3.1rem);
+  border-top: 1px solid #ffffff2b;
+  color: #ceccc4;
+  font-size: 0.76rem;
+}
+.footer-base button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #f2f1ec;
+}
+.footer-base button > span {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #202020;
+  background: #e1ece6;
+}
+.footer-base button:hover > span {
+  background: #bcd4ca;
+}
+@media (min-width: 520px) {
+  .footer-link-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 900px) {
+  .footer-grid {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  }
+}

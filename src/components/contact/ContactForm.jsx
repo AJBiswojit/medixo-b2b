@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   Loader2,
@@ -61,6 +61,8 @@ export default function ContactForm({ prefill }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState(null);
   const [copiedBrief, setCopiedBrief] = useState(false);
+  const copyTimer = useRef(null);
+  useEffect(() => () => clearTimeout(copyTimer.current), []);
 
   // Apply contextual prefill when visitor clicks service/industry/project/solution CTA
   useEffect(() => {
@@ -152,7 +154,8 @@ export default function ContactForm({ prefill }) {
     try {
       await navigator.clipboard.writeText(submissionResult.formattedBrief);
       setCopiedBrief(true);
-      window.setTimeout(() => setCopiedBrief(false), 2500);
+      clearTimeout(copyTimer.current);
+      copyTimer.current = window.setTimeout(() => setCopiedBrief(false), 2500);
     } catch {
       setCopiedBrief(false);
     }
@@ -160,7 +163,7 @@ export default function ContactForm({ prefill }) {
 
   const inputBase = (fieldName) =>
     [
-      "w-full rounded-[14px] bg-[#F8F8F6] border px-4 py-3 text-[14.5px] text-[#202020] placeholder:text-[#9A9A96] transition-colors duration-200 focus:bg-white focus:outline-none",
+      "contact-input w-full rounded-[11px] bg-[#F8F8F6] border px-4 py-3 text-[15px] text-[#202020] placeholder:text-[#696963] transition-colors duration-200 focus:bg-white",
       errors[fieldName] && touched[fieldName]
         ? "border-[#C04A3E] focus:border-[#9E382E]"
         : "border-[#E4E4E0] focus:border-[#202020]",
@@ -173,26 +176,25 @@ export default function ContactForm({ prefill }) {
       onSubmit={handleSubmit}
       noValidate
       aria-label="Project Inquiry Form"
-      className="rounded-[26px] bg-white border border-[#EAEAEA] p-6 sm:p-9 lg:p-10 shadow-editorial"
+      className="contact-form"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-6 mb-7 border-b border-[#EAEAEA]">
+      <div className="contact-form-header">
         <div>
-          <h3 className="font-display text-[1.55rem] text-[#202020]">
-            Project Inquiry
-          </h3>
-          <p className="text-[13px] text-[#777777] mt-0.5">
+          <p className="editorial-label">Tell us what you need</p>
+          <h3 className="font-display">Project Inquiry</h3>
+          <p className="text-[13px] text-[var(--text-secondary)] mt-1">
             Fields marked with <span className="text-[#202020]">*</span> are
             required.
           </p>
         </div>
 
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1 rounded-full bg-[#F5F5F3] border border-[#EAEAEA] text-[#666666] self-start sm:self-auto">
+        <span className="contact-form-status">
           <span
             className="w-1.5 h-1.5 rounded-full"
             style={{ backgroundColor: backendLive ? "#5D877F" : "#D1B5A6" }}
             aria-hidden="true"
           />
-          {backendLive ? "API Endpoint Connected" : "Configurable API Mode"}
+          {backendLive ? "Online submissions" : "Brief mode · no live delivery"}
         </span>
       </div>
 
@@ -275,7 +277,9 @@ export default function ContactForm({ prefill }) {
             value={values.businessEmail}
             onChange={handleChange}
             onBlur={handleBlur}
-            aria-invalid={Boolean(errors.businessEmail && touched.businessEmail)}
+            aria-invalid={Boolean(
+              errors.businessEmail && touched.businessEmail,
+            )}
             aria-describedby={
               errors.businessEmail && touched.businessEmail
                 ? "err-businessEmail"
@@ -369,7 +373,7 @@ export default function ContactForm({ prefill }) {
             onChange={handleChange}
             onBlur={handleBlur}
             aria-invalid={Boolean(
-              errors.serviceRequired && touched.serviceRequired
+              errors.serviceRequired && touched.serviceRequired,
             )}
             aria-describedby={
               errors.serviceRequired && touched.serviceRequired
@@ -400,7 +404,9 @@ export default function ContactForm({ prefill }) {
             className="block text-[12.5px] font-semibold text-[#202020] mb-1.5"
           >
             Estimated Budget{" "}
-            <span className="font-normal text-[#777777]">(Optional)</span>
+            <span className="font-normal text-[var(--text-secondary)]">
+              (Optional)
+            </span>
           </label>
           <select
             id="field-estimatedBudget"
@@ -435,7 +441,7 @@ export default function ContactForm({ prefill }) {
             onChange={handleChange}
             onBlur={handleBlur}
             aria-invalid={Boolean(
-              errors.projectDescription && touched.projectDescription
+              errors.projectDescription && touched.projectDescription,
             )}
             aria-describedby={
               errors.projectDescription && touched.projectDescription
@@ -474,7 +480,7 @@ export default function ContactForm({ prefill }) {
           )}
         </Button>
 
-        <p className="text-[12px] text-[#777777]">
+        <p className="text-[12px] text-[var(--text-secondary)]">
           Your details are used solely to evaluate your project inquiry.
         </p>
       </div>
@@ -489,8 +495,8 @@ export default function ContactForm({ prefill }) {
             submissionResult.status === "submitted"
               ? "bg-[#F2F7F6] border-[#ACC6C1]"
               : submissionResult.status === "unconfigured"
-              ? "bg-[#FAF6F3] border-[#E5D3C9]"
-              : "bg-[#FDF4F3] border-[#E6B8B3]",
+                ? "bg-[#FAF6F3] border-[#E5D3C9]"
+                : "bg-[#FDF4F3] border-[#E6B8B3]",
           ].join(" ")}
         >
           {submissionResult.status === "submitted" && (
@@ -519,12 +525,12 @@ export default function ContactForm({ prefill }) {
                 />
                 <div className="space-y-1.5">
                   <p className="text-[14px] font-semibold text-[#202020]">
-                    Development Fallback — Backend Endpoint Not Configured
+                    Inquiry brief ready — not sent
                   </p>
                   <p className="text-[13px] text-[#555555] leading-relaxed">
                     {submissionResult.message}
                   </p>
-                  <p className="text-[12px] text-[#777777] leading-relaxed">
+                  <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">
                     <strong className="font-semibold text-[#4A4A4A]">
                       To enable live submissions:
                     </strong>{" "}
@@ -557,9 +563,9 @@ export default function ContactForm({ prefill }) {
                     href={`mailto:${
                       CONTACT_CONFIG.businessEmail
                     }?subject=${encodeURIComponent(
-                      `Project Inquiry — ${submissionResult.payload.companyName}`
+                      `Project Inquiry — ${submissionResult.payload.companyName}`,
                     )}&body=${encodeURIComponent(
-                      submissionResult.formattedBrief
+                      submissionResult.formattedBrief,
                     )}`}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[12.5px] font-medium bg-[#171717] text-white hover:bg-[#2E2E2E] transition-colors"
                   >

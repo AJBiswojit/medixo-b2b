@@ -1,207 +1,158 @@
-import {
-  gsap,
-  ScrollTrigger,
-  ANIMATION_CONFIG,
-  prefersReducedMotion,
-  isMobileViewport,
-} from "./animationConfig";
+import { gsap, ScrollTrigger, ANIMATION_CONFIG } from "./animationConfig";
 
-/**
- * Reveals staggered items when a section enters the viewport.
- */
-export function revealStagger(selector, triggerEl, options = {}) {
-  if (!triggerEl || prefersReducedMotion()) return;
-
+// Short, related groups move as a unit. Nothing is hidden while waiting offscreen,
+// so anchor jumps and keyboard focus never depend on a reveal finishing first.
+export function revealStagger(selector, scope, options = {}) {
   const targets =
     typeof selector === "string"
-      ? triggerEl.querySelectorAll(selector)
-      : selector;
+      ? [...scope.querySelectorAll(selector)]
+      : [...selector];
+  const groups = new Map();
+  for (const item of targets) {
+    const trigger =
+      options.trigger ||
+      item.closest(".section-heading, [data-reveal-group]") ||
+      item;
+    if (!groups.has(trigger)) groups.set(trigger, []);
+    groups.get(trigger).push(item);
+  }
 
-  if (!targets || !targets.length) return;
-
-  const mobile = isMobileViewport();
-
-  // Keep the rendered content readable before, during, and after the reveal.
-  // A paused scroll trigger must never leave a catalog or its heading invisible.
-  return gsap.fromTo(
-    targets,
-    { y: options.y ?? (mobile ? 12 : 18) },
-    {
-      y: 0,
-      immediateRender: false,
-      duration: options.duration ?? ANIMATION_CONFIG.duration.base,
-      stagger: options.stagger ?? ANIMATION_CONFIG.stagger.base,
-      ease: options.ease ?? ANIMATION_CONFIG.ease.editorial,
-      clearProps: "transform",
-      scrollTrigger: {
-        trigger: options.trigger || triggerEl,
-        start: options.start || ANIMATION_CONFIG.triggerStart,
-        once: true,
+  for (const [trigger, items] of groups) {
+    gsap.fromTo(
+      items,
+      { y: options.y ?? 15, opacity: options.opacity ?? 0.85 },
+      {
+        y: 0,
+        opacity: 1,
+        immediateRender: false,
+        duration: options.duration ?? ANIMATION_CONFIG.duration.base,
+        stagger: options.stagger ?? ANIMATION_CONFIG.stagger.base,
+        ease: ANIMATION_CONFIG.ease.editorial,
+        clearProps: "transform,opacity",
+        scrollTrigger: {
+          trigger,
+          start: options.start || ANIMATION_CONFIG.triggerStart,
+          once: true,
+        },
       },
-    }
-  );
+    );
+  }
 }
 
-/**
- * Reveals an editorial image frame with a soft clip-path + gentle scale settle.
- */
-export function revealImageMask(selector, triggerEl, options = {}) {
-  if (!triggerEl || prefersReducedMotion()) return;
+export function revealCardGroups(
+  selector,
+  scope,
+  { size = 2, ...options } = {},
+) {
+  const cards = [...scope.querySelectorAll(selector)];
+  for (let index = 0; index < cards.length; index += size) {
+    revealStagger(cards.slice(index, index + size), scope, {
+      ...options,
+      trigger: cards[index],
+    });
+  }
+}
 
-  const frames = triggerEl.querySelectorAll(selector);
-  if (!frames.length) return;
-
-  frames.forEach((frame, idx) => {
-    const img = frame.querySelector("img");
-    const tl = gsap.timeline({
+export function revealImageMask(selector, scope, options = {}) {
+  scope.querySelectorAll(selector).forEach((frame) => {
+    const timeline = gsap.timeline({
       scrollTrigger: {
         trigger: frame,
-        start: options.start || "top 88%",
+        start: options.start || "top 91%",
         once: true,
       },
     });
-
-    tl.from(frame, {
-      y: 28,
-      opacity: 0,
-      clipPath: "inset(8% 0% 0% 0% round 20px)",
-      duration: 0.95,
-      delay: idx * 0.08,
-      ease: ANIMATION_CONFIG.ease.smooth,
-      clearProps: "clipPath,transform",
-    });
-
-    if (img) {
-      tl.from(
-        img,
+    timeline.fromTo(
+      frame,
+      { clipPath: "inset(0 0 9% 0 round 18px)" },
+      {
+        clipPath: "inset(0 0 0% 0 round 18px)",
+        immediateRender: false,
+        duration: 0.95,
+        ease: "power3.out",
+        clearProps: "clipPath",
+      },
+    );
+    const layer = frame.querySelector("[data-image-layer]");
+    if (layer)
+      timeline.fromTo(
+        layer,
+        { scale: 1.065 },
         {
-          scale: 1.09,
-          duration: 1.15,
-          ease: ANIMATION_CONFIG.ease.editorial,
+          scale: 1,
+          immediateRender: false,
+          duration: 1.05,
+          ease: "power3.out",
           clearProps: "transform",
         },
-        0
+        0,
       );
-    }
   });
 }
 
-/**
- * Subtle vertical scroll parallax for layered portfolio elements on desktop.
- */
-export function applySubtleParallax(selector, triggerEl, amount = -24) {
-  if (!triggerEl || prefersReducedMotion() || isMobileViewport()) return;
-
-  const items = triggerEl.querySelectorAll(selector);
-  if (!items.length) return;
-
-  items.forEach((item) => {
-    gsap.fromTo(
-      item,
-      { y: -amount * 0.5 },
-      {
-        y: amount,
-        ease: "none",
-        scrollTrigger: {
-          trigger: item,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.8,
+// A companion layer drifts only while the feature containing it is on screen.
+export function applySubtleParallax(selector, scope, amount = 13) {
+  const media = gsap.matchMedia(scope);
+  media.add("(min-width: 1100px)", () => {
+    scope.querySelectorAll(selector).forEach((item) => {
+      const trigger =
+        item.closest("[data-parallax-frame]") || item.parentElement;
+      gsap.fromTo(
+        item,
+        { y: amount },
+        {
+          y: -amount,
+          ease: "none",
+          immediateRender: false,
+          scrollTrigger: {
+            trigger,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.65,
+          },
         },
-      }
-    );
+      );
+    });
   });
+  return () => media.revert();
 }
 
-/**
- * Animates process timeline progress bar and stage cards on scroll.
- */
-export function initProcessTimeline(scopeEl) {
-  if (!scopeEl || prefersReducedMotion()) return;
-
-  const mm = gsap.matchMedia();
-
-  mm.add("(min-width: 1024px)", () => {
-    const desktopLine = scopeEl.querySelector("[data-process-line-desktop]");
-    const desktopStages = scopeEl.querySelectorAll(
-      "[data-process-desktop] [data-process-stage]"
-    );
-
-    if (desktopLine) {
+export function initProcessTimeline(scope) {
+  const media = gsap.matchMedia(scope);
+  const timeline = scope.querySelector("[data-process-timeline]");
+  const line = scope.querySelector("[data-process-line]");
+  media.add(
+    { horizontal: "(min-width: 1100px)", vertical: "(max-width: 1099px)" },
+    ({ conditions }) => {
+      const property = conditions.horizontal ? "scaleX" : "scaleY";
       gsap.fromTo(
-        desktopLine,
-        { scaleX: 0, transformOrigin: "left center" },
+        line,
         {
-          scaleX: 1,
+          [property]: 0,
+          transformOrigin: conditions.horizontal ? "left center" : "center top",
+        },
+        {
+          [property]: 1,
           ease: "none",
           scrollTrigger: {
-            trigger: scopeEl,
-            start: "top 78%",
-            end: "bottom 72%",
-            scrub: 0.6,
+            trigger: timeline,
+            start: "top 83%",
+            end: "bottom 61%",
+            scrub: 0.55,
           },
-        }
-      );
-    }
-
-    if (desktopStages.length) {
-      gsap.from(desktopStages, {
-        y: 26,
-        opacity: 0,
-        duration: 0.78,
-        stagger: 0.09,
-        ease: ANIMATION_CONFIG.ease.editorial,
-        clearProps: "transform",
-        scrollTrigger: {
-          trigger: scopeEl,
-          start: "top 84%",
-          once: true,
         },
-      });
-    }
-  });
-
-  mm.add("(max-width: 1023px)", () => {
-    const mobileLine = scopeEl.querySelector("[data-process-line-mobile]");
-    const mobileStages = scopeEl.querySelectorAll(
-      "[data-process-mobile] [data-process-stage]"
-    );
-
-    if (mobileLine) {
-      gsap.fromTo(
-        mobileLine,
-        { scaleY: 0, transformOrigin: "top center" },
-        {
-          scaleY: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: scopeEl,
-            start: "top 82%",
-            end: "bottom 75%",
-            scrub: 0.6,
-          },
-        }
       );
-    }
-
-    if (mobileStages.length) {
-      gsap.from(mobileStages, {
-        y: 22,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.08,
-        ease: ANIMATION_CONFIG.ease.editorial,
-        clearProps: "transform",
-        scrollTrigger: {
-          trigger: scopeEl,
-          start: "top 86%",
-          once: true,
-        },
+      revealCardGroups("[data-process-stage]", scope, {
+        size: conditions.horizontal ? 6 : 2,
+        y: 13,
+        start: "top 89%",
       });
-    }
-  });
+    },
+  );
+  return () => media.revert();
 }
 
 export function refreshScrollTriggers() {
-  ScrollTrigger.refresh();
+  // The safe refresh defers past active scrolling instead of cancelling native smooth jumps.
+  ScrollTrigger.refresh(true);
 }

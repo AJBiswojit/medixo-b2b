@@ -15,7 +15,8 @@ export function validateInquiryForm(values) {
   if (!values.businessEmail || !values.businessEmail.trim()) {
     errors.businessEmail = "Please enter your business email address.";
   } else if (!EMAIL_REGEX.test(values.businessEmail.trim())) {
-    errors.businessEmail = "Please enter a valid email address (e.g., name@company.com).";
+    errors.businessEmail =
+      "Please enter a valid email address (e.g., name@company.com).";
   }
 
   if (!values.phoneNumber || !values.phoneNumber.trim()) {
@@ -23,8 +24,13 @@ export function validateInquiryForm(values) {
   } else {
     const cleaned = values.phoneNumber.trim();
     const digitsOnly = cleaned.replace(/\D/g, "");
-    if (!PHONE_REGEX.test(cleaned) || digitsOnly.length < 7 || digitsOnly.length > 15) {
-      errors.phoneNumber = "Please enter a valid phone number including country or area code.";
+    if (
+      !PHONE_REGEX.test(cleaned) ||
+      digitsOnly.length < 7 ||
+      digitsOnly.length > 15
+    ) {
+      errors.phoneNumber =
+        "Please enter a valid phone number including country or area code.";
     }
   }
 
@@ -36,7 +42,10 @@ export function validateInquiryForm(values) {
     errors.serviceRequired = "Please select the primary service required.";
   }
 
-  if (!values.projectDescription || values.projectDescription.trim().length < 20) {
+  if (
+    !values.projectDescription ||
+    values.projectDescription.trim().length < 20
+  ) {
     errors.projectDescription =
       "Please share a brief overview of your project requirements (at least 20 characters).";
   }
@@ -50,15 +59,19 @@ export function validateSingleField(name, value, allValues = {}) {
   return allErrors[name] || "";
 }
 
-export function scrollToSection(sectionId) {
+export function scrollBehavior() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ? "auto"
+    : "smooth";
+}
+
+export function scrollToSection(sectionId, { block = "start" } = {}) {
   if (typeof window === "undefined") return;
   const cleanId = sectionId.replace(/^#/, "");
+  const behavior = scrollBehavior();
   if (cleanId === "top" || cleanId === "home") {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior });
     return;
   }
-  const target = document.getElementById(cleanId);
-  if (target) {
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  document.getElementById(cleanId)?.scrollIntoView({ behavior, block });
 }
