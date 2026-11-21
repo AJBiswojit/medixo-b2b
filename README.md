@@ -23,7 +23,7 @@ Run `node --test` for the corridor geometry checks. In the browser, scroll throu
 
 ## Industry catalogue
 
-`src/data/industries.js` is the source for sector names, imagery, capabilities, the gallery directory, and inquiry options. Use `spotlight: true` to feature a sector first in the gallery. Catalogue photography illustrates service capabilities, not client or project work. Portfolio entries remain in `src/data/projects.js`.
+`src/data/industries.js` supplies the 18 sectors, editorial images, detail content, and the industry choices in the contact form. The portraits share one perspective orbit in catalogue order. GSAP rotates it once every 75 seconds when visible and idle, and stops automatic motion when reduced motion is requested. Hover, tap, or use the arrow keys to bring a sector forward; the ring holds while exploring a selection or reading the details. Press `P` while focused in the gallery to disable or re-enable autoplay. Link straight to a selection with `#industry-<id>`. Catalogue photography illustrates sectors, not Medixo AI client work. Portfolio entries remain in `src/data/projects.js`.
 
 ## Photography and product views
 

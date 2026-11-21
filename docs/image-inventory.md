@@ -23,7 +23,7 @@ The first eight portraits follow the canonical service catalogue. The last four 
 
 ## Industry gallery
 
-Each cover uses a real subject that can be identified at card scale. The 18 cards, five directory groups, three sector spotlights, and 20 inquiry choices are retained.
+The 18 sectors use individually framed 324 × 432 portrait crops (`industry-*-324.webp`) of their existing credited photographs in the orbit. The detail overlay opens the same photograph in its wider 1000 × 667 framing. All 20 inquiry choices remain available. The photos illustrate each sector; they are not project case studies.
 
 | Previous image stem                    | Placement and requirement                                        | Replacement and Pexels ID                                                   |
 | -------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------- |
